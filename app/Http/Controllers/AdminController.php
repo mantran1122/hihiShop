@@ -61,16 +61,18 @@ class AdminController extends Controller
     // 4. Cập nhật trạng thái Đơn hàng
     public function updateOrderStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:pending,processing,shipped,delivered,completed,cancelled'
+        $data = $request->validate([
+            'status' => 'required|in:pending,processing,shipped,delivered,completed,cancelled',
+            'cancel_reason' => 'nullable|string|max:255',
+            'admin_note' => 'nullable|string|max:1000',
         ]);
 
         $order = DonHang::with('mucs')->findOrFail($id);
         $wasCancelled = $order->status === 'cancelled';
 
-        DB::transaction(function () use ($request, $order, $wasCancelled) {
+        DB::transaction(function () use ($request, $data, $order, $wasCancelled) {
             // Huỷ đơn → hoàn tồn kho và trả lại lượt dùng voucher
-            if ($request->status === 'cancelled' && !$wasCancelled) {
+            if ($data['status'] === 'cancelled' && !$wasCancelled) {
                 foreach ($order->mucs as $item) {
                     if ($item->variant_id) {
                         BienTheSanPham::whereKey($item->variant_id)->increment('stock_qty', $item->qty);
@@ -82,15 +84,21 @@ class AdminController extends Controller
                         Coupon::where('code', $code)->where('used', '>', 0)->decrement('used');
                     }
                 }
+
+                $order->cancel_reason = $data['cancel_reason'] ?? null;
             }
 
-            $order->status = $request->status;
+            if ($request->has('admin_note')) {
+                $order->admin_note = $data['admin_note'] ?? null;
+            }
+
+            $order->status = $data['status'];
 
             // Nếu hoàn thành đơn hàng, tự động đánh dấu đã thanh toán
-            if (in_array($request->status, ['completed', 'delivered'])) {
+            if (in_array($data['status'], ['completed', 'delivered'])) {
                 $order->payment_status = 'paid';
                 $order->shipping_status = 'fulfilled';
-            } elseif ($request->status === 'cancelled') {
+            } elseif ($data['status'] === 'cancelled') {
                 $order->shipping_status = 'cancelled';
             }
 

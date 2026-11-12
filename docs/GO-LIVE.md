@@ -18,13 +18,14 @@ Danh sách việc **bắt buộc** phải xong trước khi cho khách thật mu
 Khách quên mật khẩu sẽ **không nhận được mail**. Cần:
 - Đăng ký SMTP (Resend / Mailgun / Gmail App Password / SMTP của hosting)
 - Đặt `MAIL_MAILER=smtp`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS`
-- Test: vào `/forgot-password`, gửi thử và kiểm tra hộp thư
+- Kiểm tra: `php artisan hihi:mail-check ban@example.com` → nhận được mail là cấu hình đúng
+- Test luồng: vào `/forgot-password`, gửi thử và kiểm tra hộp thư
 
 ### 2.2. Xác nhận thanh toán thật
 Hiện có 2 đường: nút "Mô phỏng thanh toán" (chỉ để test) và webhook `/payment/webhook`.
 - Nối Casso / PayOS / SePay hoặc webhook ngân hàng → trỏ về `https://<domain>/payment/webhook`
 - Đặt `PAYMENT_WEBHOOK_SECRET` + cấu hình bên đối tác gửi header `X-Webhook-Signature` (HMAC-SHA256 của raw body)
-- **Tắt nút mô phỏng trên production**: sửa [checkout/qr.blade.php](../resources/views/checkout/qr.blade.php) hoặc bọc `@if(app()->environment('local'))`
+- **Nút mô phỏng thanh toán đã tự động ẩn trên production**: chỉ hiện khi `APP_ENV=local` hoặc tài khoản Admin. Khách trên production chỉ thấy hướng dẫn chờ hệ thống tự xác nhận.
 - Thử chuyển khoản thật 1 đơn nhỏ → kiểm tra đơn tự chuyển `paid`
 
 ### 2.3. Tài khoản demo

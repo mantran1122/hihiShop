@@ -120,4 +120,37 @@ class OrderAccessTest extends TestCase
             ->get(route('checkout.success', $this->order->code))
             ->assertOk();
     }
+
+    public function test_customer_cannot_self_confirm_payment_outside_local_env(): void
+    {
+        $this->actingAs($this->owner)
+            ->postJson(route('checkout.payment.simulate', $this->order->code))
+            ->assertStatus(403);
+
+        $this->assertSame('unpaid', $this->order->fresh()->payment_status);
+    }
+
+    public function test_customer_can_self_confirm_payment_in_local_env(): void
+    {
+        $this->app['env'] = 'local';
+
+        $this->withSession(['_token' => 'local-csrf'])
+            ->withHeader('X-CSRF-TOKEN', 'local-csrf')
+            ->actingAs($this->owner)
+            ->postJson(route('checkout.payment.simulate', $this->order->code))
+            ->assertOk();
+
+        $this->assertSame('paid', $this->order->fresh()->payment_status);
+    }
+
+    public function test_admin_can_simulate_payment_on_any_env(): void
+    {
+        $admin = User::where('email', 'admin@example.com')->firstOrFail();
+
+        $this->actingAs($admin)
+            ->postJson(route('checkout.payment.simulate', $this->order->code))
+            ->assertOk();
+
+        $this->assertSame('paid', $this->order->fresh()->payment_status);
+    }
 }

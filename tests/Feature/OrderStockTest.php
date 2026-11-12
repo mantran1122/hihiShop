@@ -65,6 +65,29 @@ class OrderStockTest extends TestCase
         ]));
     }
 
+    public function test_cancel_reason_and_admin_note_are_saved_and_visible_to_customer(): void
+    {
+        $this->addToCart(1);
+        $this->placeOrder();
+
+        $order = DonHang::latest('id')->firstOrFail();
+
+        $this->actingAs($this->admin)->post(route('admin.orders.updateStatus', $order->id), [
+            'status' => 'cancelled',
+            'cancel_reason' => 'Khách đổi ý',
+            'admin_note' => 'Đã gọi xác nhận với khách',
+        ])->assertRedirect();
+
+        $order->refresh();
+        $this->assertSame('Khách đổi ý', $order->cancel_reason);
+        $this->assertSame('Đã gọi xác nhận với khách', $order->admin_note);
+
+        $this->actingAs($this->customer)
+            ->get(route('orders.show', $order->code))
+            ->assertOk()
+            ->assertSee('Khách đổi ý');
+    }
+
     public function test_cancelling_order_restores_stock_and_coupon_usage(): void
     {
         $coupon = Coupon::where('code', 'HIHI10')->firstOrFail();

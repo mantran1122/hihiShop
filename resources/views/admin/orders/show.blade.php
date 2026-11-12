@@ -35,20 +35,49 @@
         </div>
 
         <!-- Form status update -->
-        <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}" class="flex items-center gap-2 m-0">
+        <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 m-0 w-full">
             @csrf
-            <select name="status" id="status" class="form-select text-xs font-semibold py-2">
-                <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Đang xử lý</option>
-                <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Đang giao hàng</option>
-                <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Hoàn thành</option>
-                <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Hủy đơn hàng</option>
-            </select>
-            <button type="submit" class="btn-primary btn-sm py-2 px-4 whitespace-nowrap">
-                Cập nhật
-            </button>
+            <div>
+                <label class="form-label" for="status">Trạng thái</label>
+                <select name="status" id="status" class="form-select text-xs font-semibold py-2">
+                    <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
+                    <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Đang xử lý</option>
+                    <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Đang giao hàng</option>
+                    <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                    <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Hủy đơn hàng</option>
+                </select>
+            </div>
+            <div>
+                <label class="form-label" for="cancel_reason">Lý do huỷ (nếu huỷ)</label>
+                <input id="cancel_reason" name="cancel_reason" type="text" maxlength="255"
+                       value="{{ $order->cancel_reason }}"
+                       placeholder="Khách đổi ý / Hết hàng..." class="form-input text-xs py-2">
+            </div>
+            <div>
+                <label class="form-label" for="admin_note">Ghi chú nội bộ</label>
+                <input id="admin_note" name="admin_note" type="text" maxlength="1000"
+                       value="{{ $order->admin_note }}"
+                       placeholder="Chỉ admin thấy" class="form-input text-xs py-2">
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="btn-primary btn-sm py-2.5 px-4 w-full whitespace-nowrap">
+                    Cập nhật
+                </button>
+            </div>
         </form>
     </div>
+
+    @if($order->cancel_reason)
+        <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm">
+            <strong>Đơn đã huỷ:</strong> {{ $order->cancel_reason }}
+        </div>
+    @endif
+
+    @if($order->admin_note)
+        <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+            <strong>Ghi chú nội bộ:</strong> {{ $order->admin_note }}
+        </div>
+    @endif
 
     <!-- Customer & Payment Info Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">

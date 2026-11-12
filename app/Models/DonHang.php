@@ -8,7 +8,7 @@ class DonHang extends Model
 {
     protected $table = 'orders';
     protected $fillable = [
-        'user_id','code','status','payment_status','shipping_status',
+        'user_id','code','status','cancel_reason','admin_note','payment_status','shipping_status',
         'shipping_carrier','shipping_service',
         'shipping_address_id','billing_address_id','currency',
         'subtotal','discount_total','coupon_code','shipping_coupon_code',

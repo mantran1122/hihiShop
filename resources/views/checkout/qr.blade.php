@@ -186,19 +186,31 @@
                     <span class="text-[11px] font-mono text-slate-400" x-text="pollCount + ' lần quét'"></span>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                    <!-- Manual 'I have transferred' button -->
-                    <button type="button" @click="simulateConfirm()" :disabled="simulating" class="btn-primary py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-rose-600/20 flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" :class="simulating ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        <span x-text="simulating ? 'Đang xác thực...' : 'Tôi đã chuyển tiền xong'"></span>
-                    </button>
+                @php
+                    $canSimulate = app()->environment('local') || (auth()->check() && auth()->user()->hasRole('Admin'));
+                @endphp
 
-                    <!-- Test simulation button for dev testing -->
-                    <button type="button" @click="simulateConfirm(true)" class="btn-secondary py-3.5 rounded-2xl font-bold text-xs text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 border-dashed">
-                        <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        <span>Mô phỏng thanh toán (Test Dev)</span>
-                    </button>
-                </div>
+                @if($canSimulate)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <!-- Manual 'I have transferred' button (chỉ dev/admin) -->
+                        <button type="button" @click="simulateConfirm()" :disabled="simulating" class="btn-primary py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-rose-600/20 flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" :class="simulating ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span x-text="simulating ? 'Đang xác thực...' : 'Tôi đã chuyển tiền xong'"></span>
+                        </button>
+
+                        <!-- Test simulation button for dev testing -->
+                        <button type="button" @click="simulateConfirm(true)" class="btn-secondary py-3.5 rounded-2xl font-bold text-xs text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 border-dashed">
+                            <svg class="w-3.5 h-3.5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <span>Mô phỏng thanh toán (Test Dev)</span>
+                        </button>
+                    </div>
+                @else
+                    <div class="pt-2 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-xs text-slate-600 leading-relaxed">
+                        <p class="font-bold text-slate-700 mb-1">Sau khi chuyển khoản</p>
+                        Hệ thống tự động xác nhận trong 1–2 phút và chuyển bạn sang trang hoàn tất đơn hàng.
+                        Nếu sau 10 phút đơn chưa cập nhật, vui lòng gọi <a href="tel:19000129" class="font-bold text-rose-600">1900 0129</a> kèm mã đơn.
+                    </div>
+                @endif
 
                 <div class="pt-3 text-center">
                     <a href="{{ route('orders.show', $order->code) }}" class="text-xs font-semibold text-slate-500 hover:text-rose-600 transition inline-flex items-center gap-1">
@@ -296,6 +308,13 @@ function vietqrPayment(config) {
                     }
                 });
                 const data = await res.json();
+
+                if (!res.ok) {
+                    alert(data.message || 'Không thể xác nhận thanh toán. Vui lòng liên hệ hotline.');
+                    this.simulating = false;
+                    return;
+                }
+
                 if (data.success) {
                     clearInterval(this.pollingInterval);
                     clearInterval(this.timerInterval);

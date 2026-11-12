@@ -450,6 +450,14 @@ class CheckoutController extends Controller
 
         $this->authorizeOrderAccess($order);
 
+        // Chỉ cho phép mô phỏng xác nhận thanh toán ở môi trường dev hoặc bởi Admin.
+        // Trên production, khách không được tự đánh dấu đơn là "đã thanh toán".
+        abort_unless(
+            app()->environment('local') || Auth::user()?->hasRole('Admin'),
+            403,
+            'Chức năng mô phỏng thanh toán chỉ dùng cho môi trường phát triển.'
+        );
+
         $order->update([
             'payment_status' => 'paid',
             'status' => 'processing',

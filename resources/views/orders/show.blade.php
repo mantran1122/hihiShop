@@ -44,6 +44,16 @@
             </div>
         </div>
 
+        @if($order->status === 'cancelled')
+            <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm">
+                <p class="font-bold">Đơn hàng đã được huỷ</p>
+                @if($order->cancel_reason)
+                    <p class="mt-1">Lý do: <strong>{{ $order->cancel_reason }}</strong></p>
+                @endif
+                <p class="mt-1 text-xs text-rose-600">Nếu cần hỗ trợ, vui lòng gọi 1900 0129 kèm mã đơn.</p>
+            </div>
+        @endif
+
         <!-- Order Meta Info -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 my-6 p-5 rounded-2xl bg-slate-50/80 border border-slate-100">
             <div>
