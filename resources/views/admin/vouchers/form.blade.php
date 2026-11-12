@@ -118,11 +118,21 @@
                     </div>
                 </div>
 
-                <div>
-                    <label for="usage_limit" class="form-label">Số lượt dùng tối đa</label>
-                    <input id="usage_limit" name="usage_limit" type="number" min="1" step="1"
-                           value="{{ old('usage_limit', $voucher->usage_limit ?? '') }}"
-                           placeholder="Để trống = không giới hạn" class="form-input">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="usage_limit" class="form-label">Tổng lượt dùng tối đa</label>
+                        <input id="usage_limit" name="usage_limit" type="number" min="1" step="1"
+                               value="{{ old('usage_limit', $voucher->usage_limit ?? '') }}"
+                               placeholder="Để trống = không giới hạn" class="form-input">
+                    </div>
+
+                    <div>
+                        <label for="per_user_limit" class="form-label">Lượt dùng mỗi khách</label>
+                        <input id="per_user_limit" name="per_user_limit" type="number" min="1" step="1"
+                               value="{{ old('per_user_limit', $voucher->per_user_limit ?? '') }}"
+                               placeholder="Ví dụ: 1" class="form-input">
+                        <p class="text-[11px] text-slate-400 mt-1.5">Để trống = mỗi khách dùng không giới hạn.</p>
+                    </div>
                 </div>
             </div>
         </div>

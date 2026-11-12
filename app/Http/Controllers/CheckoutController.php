@@ -99,7 +99,7 @@ class CheckoutController extends Controller
         if ($couponCode !== '') {
             $coupon = Coupon::where('code', $couponCode)->where('category', 'order_discount')->first();
             if ($coupon) {
-                [$valid, $msg] = $coupon->isValidFor($subtotal);
+                [$valid, $msg] = $coupon->isValidFor($subtotal, 0, $req->user());
                 if ($valid) {
                     $orderDiscount = (float) $coupon->calculateDiscount($subtotal);
                     $orderCouponValid = true;
@@ -122,7 +122,7 @@ class CheckoutController extends Controller
         if ($shippingCouponCode !== '') {
             $shipCoupon = Coupon::where('code', $shippingCouponCode)->where('category', 'free_shipping')->first();
             if ($shipCoupon) {
-                [$valid, $msg] = $shipCoupon->isValidFor($subtotal, $shippingFeeAfterXtra);
+                [$valid, $msg] = $shipCoupon->isValidFor($subtotal, $shippingFeeAfterXtra, $req->user());
                 if ($valid) {
                     $voucherShippingDiscount = (float) $shipCoupon->calculateDiscount($subtotal, $shippingFeeAfterXtra);
                     $shippingCouponValid = true;
@@ -218,7 +218,7 @@ class CheckoutController extends Controller
         if ($couponCode !== '') {
             $coupon = Coupon::where('code', $couponCode)->where('category', 'order_discount')->first();
             if ($coupon) {
-                [$valid] = $coupon->isValidFor($subtotal);
+                [$valid] = $coupon->isValidFor($subtotal, 0, $req->user());
                 if ($valid) {
                     $orderDiscount = (float) $coupon->calculateDiscount($subtotal);
                     $validCoupon = $coupon;
@@ -232,7 +232,7 @@ class CheckoutController extends Controller
         if ($shippingCouponCode !== '') {
             $shipCoupon = Coupon::where('code', $shippingCouponCode)->where('category', 'free_shipping')->first();
             if ($shipCoupon) {
-                [$valid] = $shipCoupon->isValidFor($subtotal, $shippingFeeAfterXtra);
+                [$valid] = $shipCoupon->isValidFor($subtotal, $shippingFeeAfterXtra, $req->user());
                 if ($valid) {
                     $voucherShippingDiscount = (float) $shipCoupon->calculateDiscount($subtotal, $shippingFeeAfterXtra);
                     $validShipCoupon = $shipCoupon;

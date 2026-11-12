@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Models\Coupon;
 use App\Models\DonHang;
+use App\Models\Review;
 use App\Models\SanPham;
 use App\Models\BienTheSanPham;
 use App\Models\User;
@@ -349,6 +350,7 @@ class AdminController extends Controller
             'min_order' => ['nullable', 'numeric', 'min:0'],
             'max_discount' => ['nullable', 'numeric', 'min:0'],
             'usage_limit' => ['nullable', 'integer', 'min:1'],
+            'per_user_limit' => ['nullable', 'integer', 'min:1'],
             'starts_at' => ['nullable', 'date'],
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
             'is_active' => ['nullable', 'boolean'],
@@ -365,8 +367,44 @@ class AdminController extends Controller
         $data['min_order'] = $data['min_order'] ?? 0;
         $data['is_active'] = (bool) ($data['is_active'] ?? true);
         $data['usage_limit'] = $data['usage_limit'] ?? null;
+        $data['per_user_limit'] = $data['per_user_limit'] ?? null;
 
         return $data;
+    }
+
+    // 6.11. Danh sách đánh giá sản phẩm
+    public function reviews(Request $request)
+    {
+        $query = Review::with(['user', 'sanPham'])->latest('id');
+
+        if ($request->filled('status')) {
+            $query->where('is_approved', $request->input('status') === 'approved');
+        }
+
+        $reviews = $query->paginate(20)->withQueryString();
+
+        return view('admin.reviews.index', compact('reviews'));
+    }
+
+    // 6.12. Duyệt / ẩn đánh giá
+    public function toggleReview($id)
+    {
+        $review = Review::with('user')->findOrFail($id);
+        $review->is_approved = !$review->is_approved;
+        $review->save();
+
+        $status = $review->is_approved ? 'Đã duyệt' : 'Đã ẩn';
+
+        return back()->with('success', "{$status} đánh giá của ".($review->user->name ?? 'khách hàng'));
+    }
+
+    // 6.13. Xoá đánh giá
+    public function destroyReview($id)
+    {
+        $review = Review::findOrFail($id);
+        $review->delete();
+
+        return back()->with('success', 'Đã xoá đánh giá.');
     }
 
     // 7. Quản lý Người dùng

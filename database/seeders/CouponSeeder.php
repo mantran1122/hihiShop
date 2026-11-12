@@ -88,13 +88,14 @@ class CouponSeeder extends Seeder
             [
                 'code' => 'WELCOME20',
                 'title' => 'Chào Bạn Mới Giảm 20K',
-                'description' => 'Mã ưu đãi tri ân khách hàng mới cho đơn từ 150.000đ',
+                'description' => 'Mã ưu đãi tri ân khách hàng mới cho đơn từ 150.000đ (mỗi khách 1 lần)',
                 'category' => 'order_discount',
                 'type' => 'fixed',
                 'value' => 20000,
                 'min_order' => 150000,
                 'max_discount' => 20000,
                 'usage_limit' => 2000,
+                'per_user_limit' => 1,
                 'is_active' => true,
             ],
         ];

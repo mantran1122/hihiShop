@@ -18,6 +18,7 @@ class Coupon extends Model
         'min_order',
         'max_discount',
         'usage_limit',
+        'per_user_limit',
         'used',
         'starts_at',
         'ends_at',
@@ -36,7 +37,7 @@ class Coupon extends Model
     /**
      * Kiểm tra tính hợp lệ của voucher
      */
-    public function isValidFor($subtotal, $shippingFee = 0)
+    public function isValidFor($subtotal, $shippingFee = 0, $user = null)
     {
         if (!$this->is_active) {
             return [false, 'Mã giảm giá này hiện đang tạm ngưng.'];
@@ -52,6 +53,21 @@ class Coupon extends Model
 
         if ($this->usage_limit !== null && $this->used >= $this->usage_limit) {
             return [false, 'Mã giảm giá đã đạt giới hạn lượt sử dụng.'];
+        }
+
+        if ($this->per_user_limit !== null && $user !== null) {
+            $usedByUser = DonHang::query()
+                ->where('user_id', $user->id)
+                ->whereNotIn('status', ['cancelled'])
+                ->where(function ($query) {
+                    $query->where('coupon_code', $this->code)
+                        ->orWhere('shipping_coupon_code', $this->code);
+                })
+                ->count();
+
+            if ($usedByUser >= $this->per_user_limit) {
+                return [false, 'Bạn đã dùng mã này rồi (mỗi khách tối đa ' . $this->per_user_limit . ' lượt).'];
+            }
         }
 
         if ($subtotal < $this->min_order) {

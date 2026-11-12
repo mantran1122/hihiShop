@@ -111,6 +111,11 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/vouchers/{id}', [AdminController::class, 'updateVoucher'])->name('vouchers.update');
     Route::post('/vouchers/{id}/toggle', [AdminController::class, 'toggleVoucher'])->name('vouchers.toggle');
 
+    // Quản lý đánh giá
+    Route::get('/reviews', [AdminController::class, 'reviews'])->name('reviews.index');
+    Route::post('/reviews/{id}/toggle', [AdminController::class, 'toggleReview'])->name('reviews.toggle');
+    Route::delete('/reviews/{id}', [AdminController::class, 'destroyReview'])->name('reviews.destroy');
+
     // Quản lý người dùng
     Route::get('/users', [AdminController::class, 'manageUsers'])->name('users');
     Route::post('/users/{id}/role', [AdminController::class, 'updateUserRole'])->name('users.updateRole');

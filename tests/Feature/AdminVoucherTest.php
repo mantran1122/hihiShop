@@ -57,6 +57,7 @@ class AdminVoucherTest extends TestCase
             'value' => 50000,
             'min_order' => 300000,
             'usage_limit' => 100,
+            'per_user_limit' => 2,
             'is_active' => 1,
         ]);
 
@@ -67,6 +68,7 @@ class AdminVoucherTest extends TestCase
         $this->assertSame('order_discount', $voucher->category);
         $this->assertSame('fixed', $voucher->type);
         $this->assertEquals(50000, (float) $voucher->value);
+        $this->assertSame(2, (int) $voucher->per_user_limit);
         $this->assertTrue($voucher->is_active);
 
         // Voucher mới dùng được ở bước thanh toán
