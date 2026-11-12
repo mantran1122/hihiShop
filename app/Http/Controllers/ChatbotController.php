@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AiTrainingPair;
 use App\Models\ChatMessage;
 use App\Models\ChatSession;
 use App\Models\SanPham;
 use App\Models\UserActivity;
+use App\Services\ChatbotLearningService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -55,9 +55,10 @@ class ChatbotController extends Controller
     }
 
     /**
-     * Send message to AI Chatbot.
+     * Gửi câu hỏi tới chatbot: ưu tiên câu trả lời đã học, nếu chưa có mới sinh câu trả lời mới
+     * rồi ghi vào bộ nhớ (ai_training_pairs) để lần sau tái sử dụng.
      */
-    public function sendMessage(Request $request): JsonResponse
+    public function sendMessage(Request $request, ChatbotLearningService $learning): JsonResponse
     {
         $request->validate([
             'message' => 'required|string|max:1000',
@@ -66,7 +67,7 @@ class ChatbotController extends Controller
         $sessionId = $this->getSessionId($request);
         $userText = trim($request->input('message'));
 
-        // 1. Save user message
+        // 1. Lưu tin nhắn của khách
         ChatMessage::create([
             'session_id' => $sessionId,
             'sender' => 'user',
@@ -74,7 +75,7 @@ class ChatbotController extends Controller
             'created_at' => now(),
         ]);
 
-        // 2. Track activity for AI RAG context
+        // 2. Ghi nhận hành vi cho hồ sơ AI
         UserActivity::create([
             'user_id' => Auth::id(),
             'session_id' => $sessionId,
@@ -83,35 +84,81 @@ class ChatbotController extends Controller
             'created_at' => now(),
         ]);
 
-        // 3. Generate AI Intelligence Response (RAG + Rule-based intent detection)
-        $aiResult = $this->generateAiResponse($userText);
+        // 3. Trả lời từ bộ nhớ đã học, nếu không khớp thì sinh câu trả lời mới
+        $learned = $learning->findLearnedAnswer($userText);
 
-        // 4. Save bot message
-        ChatMessage::create([
+        if ($learned !== null) {
+            $pair = $learned['pair'];
+            $reply = (string) $learned['answer'];
+            $products = $learning->productsForPair($pair);
+            $intent = 'learned_memory';
+        } else {
+            $aiResult = $this->generateAiResponse($userText);
+
+            $reply = $aiResult['text'];
+            $products = $aiResult['products'];
+
+            $pair = $learning->remember($userText, $reply, [
+                'intent' => $aiResult['intent'],
+                'product_ids' => $aiResult['product_ids'],
+            ], 'rule_based');
+
+            $intent = $aiResult['intent'];
+        }
+
+        // 4. Lưu câu trả lời, gắn cặp hỏi–đáp để khách có thể 👍/👎
+        $botMessage = ChatMessage::create([
             'session_id' => $sessionId,
             'sender' => 'bot',
-            'content' => $aiResult['text'],
-            'recommended_product_ids' => !empty($aiResult['product_ids']) ? $aiResult['product_ids'] : null,
+            'content' => $reply,
+            'recommended_product_ids' => !empty($products) ? array_column($products, 'id') : null,
+            'training_pair_id' => $pair->id,
             'created_at' => now(),
         ]);
 
-        // 5. Save training pair candidate for model transfer learning
-        AiTrainingPair::create([
-            'prompt' => $userText,
-            'ideal_response' => $aiResult['text'],
-            'context_json' => [
-                'user_id' => Auth::id(),
-                'intent' => $aiResult['intent'],
-            ],
-            'source' => 'high_rated_session',
-        ]);
+        // 5. Cập nhật hồ sơ AI (sở thích / ngân sách / mức tương tác)
+        $learning->refreshProfile(Auth::user(), $sessionId);
 
         return response()->json([
             'status' => 'success',
             'session_id' => $sessionId,
-            'reply' => $aiResult['text'],
-            'products' => $aiResult['products'],
+            'reply' => $reply,
+            'products' => $products,
+            'message_id' => $botMessage->id,
+            'intent' => $intent,
+            'learned' => $learned !== null,
         ])->cookie('hihi_chat_session', $sessionId, 60 * 24 * 30);
+    }
+
+    /**
+     * Nhận phản hồi 👍/👎 cho một câu trả lời của bot (cơ chế tự huấn luyện).
+     */
+    public function feedback(Request $request, ChatbotLearningService $learning): JsonResponse
+    {
+        $data = $request->validate([
+            'message_id' => ['required', 'integer', 'exists:chat_messages,id'],
+            'feedback' => ['required', 'in:thumbs_up,thumbs_down'],
+        ]);
+
+        $message = ChatMessage::findOrFail($data['message_id']);
+
+        $sessionId = $request->session()->get('hihi_chat_session')
+            ?: $request->cookie('hihi_chat_session');
+
+        abort_unless(
+            $sessionId && $message->session_id === $sessionId,
+            403,
+            'Không có quyền đánh giá tin nhắn này.'
+        );
+
+        abort_unless($message->sender === 'bot', 422, 'Chỉ đánh giá được câu trả lời của bot.');
+
+        $learning->recordFeedback($message, $data['feedback']);
+
+        return response()->json([
+            'success' => true,
+            'feedback' => $data['feedback'],
+        ]);
     }
 
     /**

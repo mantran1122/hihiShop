@@ -74,6 +74,8 @@ class DbHealthCheck extends Command
             ['Đánh giá', DB::table('reviews')->count()],
             ['Người dùng', DB::table('users')->count()],
             ['Đơn hàng', DB::table('orders')->count()],
+            ['Cặp huấn luyện AI', DB::table('ai_training_pairs')->count()],
+            ['Cặp AI đang hoạt động', DB::table('ai_training_pairs')->where('is_active', true)->count()],
         ];
 
         $this->newLine();

@@ -194,7 +194,7 @@ async function handleChatSubmit(e) {
         input.focus();
 
         if (data && data.reply) {
-            appendBotMessage(data.reply, data.products || []);
+            appendBotMessage(data.reply, data.products || [], data.message_id || null);
         } else {
             appendBotMessage("Hệ thống AI đang bận xử lý, vui lòng thử lại sau giây lát.");
         }
@@ -222,7 +222,7 @@ function appendUserMessage(text) {
     container.scrollTop = container.scrollHeight;
 }
 
-function appendBotMessage(text, products = []) {
+function appendBotMessage(text, products = [], messageId = null, feedback = 'none') {
     const container = document.getElementById("chat-messages-container");
     const msgDiv = document.createElement("div");
     msgDiv.className = "flex items-start gap-2.5";
@@ -250,6 +250,21 @@ function appendBotMessage(text, products = []) {
         `;
     }
 
+    const feedbackHtml = messageId ? `
+        <div class="mt-2.5 pt-2.5 border-t border-slate-700/80 flex items-center gap-2" data-feedback-box>
+            <span class="text-[10px] text-slate-500">Hữu ích?</span>
+            <button type="button" data-feedback="thumbs_up" onclick="sendChatFeedback(this, ${messageId}, 'thumbs_up')" aria-label="Hữu ích"
+                    class="w-7 h-7 rounded-lg bg-slate-900/80 border border-slate-700/60 flex items-center justify-center hover:border-emerald-500/60 transition ${feedback === 'thumbs_up' ? 'text-emerald-400' : 'text-slate-400'}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+            </button>
+            <button type="button" data-feedback="thumbs_down" onclick="sendChatFeedback(this, ${messageId}, 'thumbs_down')" aria-label="Chưa hữu ích"
+                    class="w-7 h-7 rounded-lg bg-slate-900/80 border border-slate-700/60 flex items-center justify-center hover:border-rose-500/60 transition ${feedback === 'thumbs_down' ? 'text-rose-400' : 'text-slate-400'}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zM17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>
+            </button>
+            <span data-thanks class="hidden text-[10px] text-emerald-400">Đã ghi nhận, cảm ơn bạn!</span>
+        </div>
+    ` : '';
+
     msgDiv.innerHTML = `
         <div class="w-7 h-7 rounded-xl bg-rose-600/30 border border-rose-500/30 text-rose-300 flex items-center justify-center shrink-0">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -260,10 +275,42 @@ function appendBotMessage(text, products = []) {
             <p class="font-semibold text-rose-300 text-[10px] uppercase tracking-wide leading-none">HIHI AI</p>
             <div class="space-y-1.5 leading-5 mt-1">${formattedText}</div>
             ${productsHtml}
+            ${feedbackHtml}
         </div>
     `;
     container.appendChild(msgDiv);
     container.scrollTop = container.scrollHeight;
+}
+
+async function sendChatFeedback(btn, messageId, value) {
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    try {
+        const res = await fetch("{{ route('chat.feedback') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": token || ""
+            },
+            body: JSON.stringify({ message_id: messageId, feedback: value })
+        });
+
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const box = btn.closest('[data-feedback-box]');
+        if (box) {
+            box.querySelectorAll('button[data-feedback]').forEach(b => {
+                b.classList.remove('text-emerald-400', 'text-rose-400');
+                b.classList.add('text-slate-400');
+            });
+            btn.classList.remove('text-slate-400');
+            btn.classList.add(value === 'thumbs_up' ? 'text-emerald-400' : 'text-rose-400');
+            box.querySelector('[data-thanks]')?.classList.remove('hidden');
+        }
+    } catch (e) {
+        console.warn("Không gửi được phản hồi", e);
+    }
 }
 
 let historyLoaded = false;
@@ -277,7 +324,7 @@ async function loadChatHistory() {
                 if (m.sender === 'user') {
                     appendUserMessage(m.content);
                 } else if (m.sender === 'bot') {
-                    appendBotMessage(m.content);
+                    appendBotMessage(m.content, [], m.id || null, m.feedback || 'none');
                 }
             });
             historyLoaded = true;

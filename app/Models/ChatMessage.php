@@ -17,6 +17,7 @@ class ChatMessage extends Model
         'sender',
         'content',
         'recommended_product_ids',
+        'training_pair_id',
         'feedback',
         'created_at',
     ];

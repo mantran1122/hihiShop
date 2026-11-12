@@ -189,7 +189,10 @@ Lưu ý:
 - [ ] Bật/tắt (ẩn/hiện) sản phẩm
 - [ ] Đổi quyền người dùng
 
-**Chatbot**: bấm widget góc phải, hỏi "giao hàng bao lâu", "có nước hoa nào" → trả lời theo dữ liệu DB.
+**Chatbot** (tự huấn luyện, không dùng LLM — xem [AI-CHATBOT.md](AI-CHATBOT.md))
+- [ ] Bấm widget góc phải, hỏi "giao hàng bao lâu", "có nước hoa nào" → trả lời theo dữ liệu DB
+- [ ] Hỏi lại **đúng câu vừa rồi** → câu trả lời lấy từ bộ nhớ (nhanh, giống hệt)
+- [ ] Bấm 👍 / 👎 dưới câu trả lời → hiện "Đã ghi nhận", điểm chất lượng cặp hỏi–đáp thay đổi
 
 ## 9. Troubleshooting
 

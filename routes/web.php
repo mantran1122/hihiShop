@@ -21,6 +21,7 @@ use App\Http\Controllers\WishlistController;
 
 // Real-time AI Chatbot
 Route::post('/chat/message', [ChatbotController::class, 'sendMessage'])->name('chat.message');
+Route::post('/chat/feedback', [ChatbotController::class, 'feedback'])->name('chat.feedback');
 Route::get('/chat/history', [ChatbotController::class, 'getHistory'])->name('chat.history');
 
 // Trang chủ & Cửa hàng
