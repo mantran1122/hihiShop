@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use App\Models\DonHang;
 use App\Models\SanPham;
+use App\Models\BienTheSanPham;
 use App\Models\User;
 use App\Models\DanhMuc;
 use Spatie\Permission\Models\Role;
@@ -97,6 +101,159 @@ class AdminController extends Controller
 
         $st = $product->is_active ? 'Đã kích hoạt' : 'Đã ẩn';
         return back()->with('success', "{$st} sản phẩm: {$product->name}");
+    }
+
+    // 6.1. Form thêm sản phẩm
+    public function createProduct()
+    {
+        return view('admin.products.form', [
+            'product' => null,
+            'variant' => null,
+            'categories' => DanhMuc::orderBy('name')->get(),
+        ]);
+    }
+
+    // 6.2. Lưu sản phẩm mới (kèm 1 biến thể mặc định)
+    public function storeProduct(Request $request)
+    {
+        $data = $this->validateProductPayload($request);
+
+        $product = DB::transaction(function () use ($data) {
+            $product = SanPham::create([
+                'category_id' => $data['category_id'],
+                'name' => $data['name'],
+                'slug' => Str::slug($data['name']).'-'.Str::lower(Str::random(5)),
+                'short_desc' => $data['short_desc'] ?? null,
+                'description' => $data['description'] ?? null,
+                'is_active' => (bool) ($data['is_active'] ?? true),
+            ]);
+
+            $product->bienThes()->create([
+                'sku' => $data['sku'] ?: 'SP-'.Str::upper(Str::random(6)),
+                'price' => $data['price'],
+                'stock_qty' => $data['stock_qty'],
+                'is_default' => true,
+            ]);
+
+            $this->syncCoverImage($product, $data['image'] ?? null);
+
+            return $product;
+        });
+
+        return redirect()->route('admin.products.index')
+            ->with('success', "Đã thêm sản phẩm: {$product->name}");
+    }
+
+    // 6.3. Form sửa sản phẩm
+    public function editProduct($id)
+    {
+        $product = SanPham::with(['bienTheMacDinh', 'anh'])->findOrFail($id);
+
+        return view('admin.products.form', [
+            'product' => $product,
+            'variant' => $product->bienTheMacDinh ?? $product->bienThes()->first(),
+            'categories' => DanhMuc::orderBy('name')->get(),
+        ]);
+    }
+
+    // 6.4. Cập nhật sản phẩm + biến thể mặc định
+    public function updateProduct(Request $request, $id)
+    {
+        $product = SanPham::with('bienTheMacDinh')->findOrFail($id);
+        $variant = $product->bienTheMacDinh ?? $product->bienThes()->first();
+        $data = $this->validateProductPayload($request, $variant);
+
+        DB::transaction(function () use ($data, $product, $variant) {
+            $product->update([
+                'category_id' => $data['category_id'],
+                'name' => $data['name'],
+                'short_desc' => $data['short_desc'] ?? null,
+                'description' => $data['description'] ?? null,
+                'is_active' => (bool) ($data['is_active'] ?? false),
+            ]);
+
+            if ($variant) {
+                $variant->update([
+                    'sku' => $data['sku'] ?: $variant->sku,
+                    'price' => $data['price'],
+                    'stock_qty' => $data['stock_qty'],
+                ]);
+            } else {
+                $product->bienThes()->create([
+                    'sku' => $data['sku'] ?: 'SP-'.Str::upper(Str::random(6)),
+                    'price' => $data['price'],
+                    'stock_qty' => $data['stock_qty'],
+                    'is_default' => true,
+                ]);
+            }
+
+            $this->syncCoverImage($product, $data['image'] ?? null);
+        });
+
+        return redirect()->route('admin.products.index')
+            ->with('success', "Đã cập nhật sản phẩm: {$product->name}");
+    }
+
+    /**
+     * Validate dữ liệu sản phẩm dùng chung cho create/update.
+     */
+    private function validateProductPayload(Request $request, ?BienTheSanPham $variant = null): array
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
+            'price' => ['required', 'numeric', 'min:0', 'max:999999999'],
+            'stock_qty' => ['required', 'integer', 'min:0', 'max:1000000'],
+            'sku' => ['nullable', 'string', 'max:50', 'regex:/^[A-Za-z0-9._-]+$/'],
+            'short_desc' => ['nullable', 'string', 'max:500'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'is_active' => ['nullable', 'boolean'],
+            'image' => ['nullable', 'string', 'max:255'],
+        ], [
+            'name.required' => 'Vui lòng nhập tên sản phẩm.',
+            'category_id.required' => 'Vui lòng chọn danh mục.',
+            'price.required' => 'Vui lòng nhập giá bán.',
+            'price.numeric' => 'Giá bán phải là số.',
+            'stock_qty.required' => 'Vui lòng nhập số lượng tồn kho.',
+            'sku.regex' => 'SKU chỉ được chứa chữ, số và các ký tự . _ -',
+        ]);
+
+        if (!empty($data['sku'])) {
+            $duplicated = BienTheSanPham::where('sku', $data['sku'])
+                ->when($variant, fn ($query) => $query->where('id', '!=', $variant->id))
+                ->exists();
+
+            if ($duplicated) {
+                throw ValidationException::withMessages([
+                    'sku' => 'SKU này đã được dùng cho một sản phẩm khác.',
+                ]);
+            }
+        }
+
+        if (!empty($data['image']) && !is_file(public_path($data['image']))) {
+            throw ValidationException::withMessages([
+                'image' => 'Không tìm thấy file ảnh trong thư mục public (ví dụ: images/placeholder-giay.svg).',
+            ]);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Gán ảnh bìa cho sản phẩm (chỉ nhận đường dẫn đã có sẵn trong public).
+     */
+    private function syncCoverImage(SanPham $product, ?string $path): void
+    {
+        if (empty($path)) {
+            return;
+        }
+
+        $product->anh()->update(['is_cover' => false]);
+
+        $product->anh()->updateOrCreate(
+            ['path' => $path],
+            ['is_cover' => true, 'sort' => 0]
+        );
     }
 
     // 7. Quản lý Người dùng

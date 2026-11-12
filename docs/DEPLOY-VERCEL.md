@@ -16,14 +16,46 @@ Storage ghi tạm: /tmp/hihi-shop/{views,sessions,cache,logs}
 - Runtime PHP: `vercel-php@0.7.4` (PHP 8.3) — runtime cộng đồng, không phải runtime chính thức của Vercel.
 - Filesystem trên Vercel là **read-only** (trừ `/tmp`), nên [api/index.php](../api/index.php) tự tạo thư mục tạm và trỏ `VIEW_COMPILED_PATH` vào đó trước khi boot Laravel.
 
-## 2. Chuẩn bị database (bắt buộc)
+## 2. Chuẩn bị database — TiDB Cloud
 
-Vercel **không** có MySQL sẵn và không dùng được SQLite file. Chọn 1 trong:
+Vercel **không** có MySQL sẵn và không dùng được SQLite file → dùng **TiDB Cloud Serverless** (MySQL-compatible, có free tier).
 
-| Nhà cung cấp | Ghi chú |
+### 2.1. Tạo cluster và lấy thông số
+
+1. Vào [tidbcloud.com](https://tidbcloud.com) → **Create Cluster → Serverless** (chọn region gần VN, ví dụ Singapore).
+2. Mở cluster → **Connect** → chọn **General connection / MySQL CLI**, ghi lại:
+
+| Thông số | Ví dụ |
 |---|---|
-| **Railway MySQL** (khuyến nghị) | Tạo project → New → Database → MySQL. Lấy `MYSQLHOST`, `MYSQLPORT`, `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD`. Kết nối TCP thường, không cần TLS. |
-| Aiven / TiDB Cloud | Có free tier nhưng **bắt buộc TLS** → cần cấu hình thêm SSL cho PDO, dễ lỗi hơn khi test lần đầu. |
+| Host | `gateway01.ap-southeast-1.prod.aws.tidbcloud.com` |
+| Port | `4000` |
+| Username | `3KmH2xyz.root` (có tiền tố, **không** phải chỉ `root`) |
+| Password | chuỗi tạo ngay khi tạo cluster |
+
+3. Tạo database trong **SQL Editor** của TiDB Cloud:
+
+```sql
+CREATE DATABASE IF NOT EXISTS hihi_shop
+  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+4. Nếu cluster bật **Allowed IP Addresses**, thêm IP máy bạn (để chạy migrate) và để `0.0.0.0/0` cho Vercel (hoặc dải IP của Vercel) nếu chưa chạy được.
+
+### 2.2. TLS — bắt buộc với TiDB
+
+TiDB Cloud **bắt buộc TLS**, PDO mặc định không dùng TLS nên sẽ báo lỗi kết nối. Project đã xử lý sẵn:
+
+- Bật bằng `DB_SSL=true`.
+- CA của TiDB Cloud Serverless (Let's Encrypt **ISRG Root X1**) đã đóng gói tại [`storage/certs/tidb-ca.pem`](../storage/certs/tidb-ca.pem) → không cần tải file CA lên Vercel.
+- `DB_SSL_VERIFY=true` để xác thực chứng chỉ server.
+- Nếu dùng **TiDB Cloud Dedicated** (CA khác): tải `ca.pem` trong console, đặt vào `storage/certs/` và trỏ `MYSQL_ATTR_SSL_CA=/duong/dan/ca.pem`.
+
+Kiểm tra nhanh TLS đã bật chưa:
+
+```powershell
+php artisan hihi:db-check --env=production
+```
+
 
 ## 3. Tạo `.env.production` và nạp dữ liệu mẫu (chạy từ máy local)
 
@@ -38,10 +70,11 @@ php artisan key:generate --show
 Mở `.env.production`, điền:
 - `APP_KEY=base64:...` (lấy từ lệnh trên)
 - `APP_URL=https://hihi-shop.vercel.app` (đổi theo domain thật)
-- `DB_HOST / DB_PORT / DB_DATABASE / DB_USERNAME / DB_PASSWORD` của MySQL cloud
+- `DB_HOST / DB_PORT=4000 / DB_DATABASE=hihi_shop / DB_USERNAME / DB_PASSWORD` của TiDB Cloud
+- `DB_SSL=true` (TiDB bắt buộc TLS), `DB_SSL_VERIFY=true`
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` (giữ nguyên trong `.env` local)
 
-Nạp schema + dữ liệu demo lên DB cloud:
+Nạp schema + dữ liệu demo lên TiDB:
 
 ```powershell
 php artisan migrate --seed --force --env=production
@@ -49,7 +82,7 @@ php artisan migrate --seed --force --env=production
 
 Lệnh này tạo: 4 danh mục, 4 sản phẩm + biến thể, 7 voucher, 6 đánh giá mẫu, 3 tài khoản demo (admin/staff/customer).
 
-> Kiểm tra nhanh: `php artisan tinker --env=production --execute="echo App\Models\SanPham::count();"` → phải ra `4`.
+> Kiểm tra bằng `php artisan hihi:db-check --env=production`: lệnh sẽ in ra phiên bản server, **trạng thái TLS**, danh sách bảng và số bản ghi. Nếu báo `TLS chưa bật` nghĩa là `DB_SSL` chưa được đọc.
 
 ## 4. Khai báo biến môi trường trên Vercel
 
@@ -65,11 +98,13 @@ APP_KEY=base64:...
 APP_URL=https://hihi-shop.vercel.app
 LOG_CHANNEL=stderr
 DB_CONNECTION=mysql
-DB_HOST=...
-DB_PORT=3306
-DB_DATABASE=...
-DB_USERNAME=...
+DB_HOST=gateway01.ap-southeast-1.prod.aws.tidbcloud.com
+DB_PORT=4000
+DB_DATABASE=hihi_shop
+DB_USERNAME=xxxxxxxx.root
 DB_PASSWORD=...
+DB_SSL=true
+DB_SSL_VERIFY=true
 SESSION_DRIVER=database
 SESSION_SECURE_COOKIE=true
 CACHE_STORE=database
@@ -149,7 +184,10 @@ Lưu ý:
 **Admin**
 - [ ] Đăng nhập `admin@example.com` → vào `/admin`
 - [ ] Đổi trạng thái đơn hàng, xem chi tiết đơn
-- [ ] Bật/tắt sản phẩm, đổi quyền người dùng
+- [ ] **Thêm sản phẩm mới** (`/admin/products/create`): nhập tên, danh mục, giá, tồn kho → sản phẩm xuất hiện ở cửa hàng
+- [ ] **Sửa sản phẩm**: đổi tên/giá/tồn kho → cập nhật đúng ở cả trang sản phẩm
+- [ ] Bật/tắt (ẩn/hiện) sản phẩm
+- [ ] Đổi quyền người dùng
 
 **Chatbot**: bấm widget góc phải, hỏi "giao hàng bao lâu", "có nước hoa nào" → trả lời theo dữ liệu DB.
 
@@ -160,12 +198,18 @@ Lưu ý:
 | 500 ngay trang đầu | Xem **Vercel → Deployments → Functions → Logs**. Thường do thiếu `APP_KEY` hoặc không kết nối được MySQL. |
 | Trang hiện không có CSS/JS | Chưa commit `public/build` hoặc manifest cũ. Chạy `npm run build` rồi commit lại. |
 | `redirect_uri_mismatch` | URI Google nhận được không khớp 100% với Console. Kiểm tra `APP_URL` (đúng `https`, không có `/` cuối) và đã thêm URI chưa. |
+| `SQLSTATE[HY000] [2002]` / `SSL connection error` | Thiếu TLS: đặt `DB_SSL=true`. Nếu vẫn lỗi do không đọc được CA trên Vercel, tạm đặt `DB_SSL_VERIFY=false` (vẫn mã hoá TLS, chỉ bỏ bước xác thực CA). |
+| `Access denied for user 'root'` | TiDB Cloud yêu cầu username **có tiền tố**, dạng `3KmH2xyz.root`, không phải `root`. |
+| `Unknown collation: 'utf8mb4_unicode_ci'` | Đổi `DB_COLLATION=utf8mb4_general_ci` (hoặc `utf8mb4_bin`) rồi migrate lại. |
+| `This connection is in read-only mode` | Đang trỏ nhầm vào TiDB **read-only replica / branch**; dùng connection của primary. |
 | Đăng nhập xong bị đá về `/login` | Session không lưu được: kiểm tra `SESSION_DRIVER=database` và bảng `sessions` đã migrate. |
 | Ảnh sản phẩm 404 | Ảnh phải nằm trong `public/images/...` và được commit; đường dẫn lưu trong DB là tương đối (`images/...`). |
 | Sửa code không thấy đổi | Chưa redeploy, hoặc đang xem preview cũ. |
 
 ## 10. Giới hạn cần biết
 
+- **TiDB không bắt buộc foreign key**: TiDB nhận cú pháp FK nhưng mặc định không enforce (cần `SET GLOBAL foreign_key_checks = ON` trước khi tạo bảng nếu muốn chặt). Ứng dụng đã tự kiểm tra tồn kho/ràng buộc ở tầng code nên demo vẫn đúng.
+- **Webhook thanh toán**: đặt `PAYMENT_WEBHOOK_SECRET` trên production để bắt buộc chữ ký HMAC-SHA256 (header `X-Webhook-Signature`). Khi để trống, endpoint `/payment/webhook` chấp nhận mọi request — chỉ phù hợp cho demo.
 - **Không upload file bền vững**: `storage/` read-only, `storage:link` không dùng được. Ảnh sản phẩm phải nằm trong `public/images` hoặc CDN ngoài (S3/Cloudinary).
 - **Cron / queue**: `QUEUE_CONNECTION=sync`; muốn queue thật phải dùng Redis/Upstash + worker ngoài.
 - **Cold start** ~250ms cho request đầu.

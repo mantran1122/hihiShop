@@ -58,9 +58,39 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => extension_loaded('pdo_mysql') ? (function () {
+                $options = [];
+
+                // TiDB Cloud (và các MySQL cloud khác) yêu cầu kết nối TLS.
+                // Bật bằng DB_SSL=true; mặc định tắt để MySQL local không bị ảnh hưởng.
+                $sslEnabled = filter_var(env('DB_SSL', false), FILTER_VALIDATE_BOOLEAN);
+
+                if ($sslEnabled) {
+                    $ca = env('MYSQL_ATTR_SSL_CA');
+
+                    // Dùng CA đóng gói sẵn (ISRG Root X1 của Let's Encrypt — CA của
+                    // TiDB Cloud Serverless) nếu không truyền đường dẫn riêng.
+                    if (!$ca) {
+                        $bundledCa = base_path('storage/certs/tidb-ca.pem');
+                        if (is_file($bundledCa)) {
+                            $ca = $bundledCa;
+                        }
+                    }
+
+                    if ($ca && defined('PDO::MYSQL_ATTR_SSL_CA')) {
+                        $options[PDO::MYSQL_ATTR_SSL_CA] = $ca;
+                    }
+
+                    if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+                        $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = filter_var(
+                            env('DB_SSL_VERIFY', true),
+                            FILTER_VALIDATE_BOOLEAN
+                        );
+                    }
+                }
+
+                return $options;
+            })() : [],
         ],
 
         'mariadb' => [

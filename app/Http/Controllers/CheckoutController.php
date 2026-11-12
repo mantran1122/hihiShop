@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -454,6 +455,27 @@ class CheckoutController extends Controller
      */
     public function handleWebhook(Request $req)
     {
+        $secret = (string) config('payment.webhook.secret', '');
+
+        // Nếu có cấu hình secret thì bắt buộc kiểm tra chữ ký HMAC-SHA256 của raw body.
+        if ($secret !== '') {
+            $headerName = (string) config('payment.webhook.header', 'X-Webhook-Signature');
+            $provided = preg_replace('/^sha256=/i', '', (string) $req->header($headerName, ''));
+            $expected = hash_hmac('sha256', $req->getContent(), $secret);
+
+            if ($provided === '' || !hash_equals($expected, $provided)) {
+                Log::warning('Payment webhook: chữ ký không hợp lệ', [
+                    'ip' => $req->ip(),
+                    'header' => $headerName,
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid signature',
+                ], 401);
+            }
+        }
+
         $payload = $req->all();
         $description = $payload['description'] ?? $payload['content'] ?? ($payload['data']['description'] ?? '');
         $amount = $payload['amount'] ?? ($payload['data']['amount'] ?? 0);

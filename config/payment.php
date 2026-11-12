@@ -20,6 +20,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Xác thực Webhook thanh toán
+    |--------------------------------------------------------------------------
+    |
+    | Đặt PAYMENT_WEBHOOK_SECRET để bắt buộc kiểm tra chữ ký HMAC-SHA256 của
+    | body (header mặc định X-Webhook-Signature, hỗ trợ cả dạng "sha256=...").
+    | Để trống = không kiểm tra (chỉ dùng cho môi trường dev/demo).
+    |
+    */
+    'webhook' => [
+        'secret' => env('PAYMENT_WEBHOOK_SECRET', ''),
+        'header' => env('PAYMENT_WEBHOOK_HEADER', 'X-Webhook-Signature'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Cấu hình Cổng tự động PayOS (Nếu tích hợp Webhook Realtime)
     |--------------------------------------------------------------------------
     */

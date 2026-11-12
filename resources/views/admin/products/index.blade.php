@@ -20,8 +20,13 @@
             </select>
         </form>
 
-        <div class="text-xs text-slate-500">
-            Tổng cộng: <strong class="text-slate-800">{{ $products->total() }}</strong> sản phẩm
+        <div class="flex items-center gap-4">
+            <div class="text-xs text-slate-500">
+                Tổng cộng: <strong class="text-slate-800">{{ $products->total() }}</strong> sản phẩm
+            </div>
+            <a href="{{ route('admin.products.create') }}" class="btn-primary text-xs px-4 py-2">
+                + Thêm sản phẩm
+            </a>
         </div>
     </div>
 
@@ -82,12 +87,17 @@
                                     @endif
                                 </td>
                                 <td class="p-4 text-center">
-                                    <form method="POST" action="{{ route('admin.products.toggleStatus', $p->id) }}" class="m-0">
-                                        @csrf
-                                        <button type="submit" class="btn-sm {{ $p->is_active ? 'btn-danger' : 'btn-primary' }}">
-                                            {{ $p->is_active ? 'Ẩn sản phẩm' : 'Hiện sản phẩm' }}
-                                        </button>
-                                    </form>
+                                    <div class="inline-flex items-center gap-2">
+                                        <a href="{{ route('admin.products.edit', $p->id) }}" class="btn-sm btn-secondary">
+                                            Sửa
+                                        </a>
+                                        <form method="POST" action="{{ route('admin.products.toggleStatus', $p->id) }}" class="m-0">
+                                            @csrf
+                                            <button type="submit" class="btn-sm {{ $p->is_active ? 'btn-danger' : 'btn-primary' }}">
+                                                {{ $p->is_active ? 'Ẩn' : 'Hiện' }}
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
