@@ -1,0 +1,12 @@
+# Chỉ những gì cần cho runtime được upload lên Vercel
+/vendor
+/node_modules
+/.git
+/.github
+/tests
+/images
+/storage/logs
+/bootstrap/cache/*.php
+*.md
+.phpunit.result.cache
+/*.png

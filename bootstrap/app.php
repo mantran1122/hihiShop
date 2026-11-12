@@ -13,6 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function ($middleware): void {
+        // Vercel / PaaS chạy sau reverse proxy: tin header X-Forwarded-* để
+        // Laravel nhận đúng HTTPS, sinh URL và cookie secure chính xác.
+        $middleware->trustProxies(at: '*');
+
         // Miễn trừ CSRF cho webhook thanh toán của bên thứ ba (PayOS, Casso, Ngân hàng)
         $middleware->validateCsrfTokens(except: [
             'payment/webhook',
