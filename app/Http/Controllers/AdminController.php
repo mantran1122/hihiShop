@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use App\Models\Coupon;
 use App\Models\DonHang;
 use App\Models\SanPham;
 use App\Models\BienTheSanPham;
@@ -256,9 +258,119 @@ class AdminController extends Controller
         );
     }
 
-    // 7. Quản lý Người dùng
-    public function manageUsers()
+    // 6.5. Danh sách voucher
+    public function vouchers(Request $request)
     {
+        $query = Coupon::query()->latest('id');
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->input('category'));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->input('status') === 'active');
+        }
+
+        $vouchers = $query->paginate(20)->withQueryString();
+
+        return view('admin.vouchers.index', compact('vouchers'));
+    }
+
+    // 6.6. Form tạo voucher
+    public function createVoucher()
+    {
+        return view('admin.vouchers.form', ['voucher' => null]);
+    }
+
+    // 6.7. Lưu voucher mới
+    public function storeVoucher(Request $request)
+    {
+        $data = $this->validateVoucherPayload($request);
+
+        Coupon::create($data);
+
+        return redirect()->route('admin.vouchers.index')
+            ->with('success', "Đã tạo voucher {$data['code']}");
+    }
+
+    // 6.8. Form sửa voucher
+    public function editVoucher($id)
+    {
+        $voucher = Coupon::findOrFail($id);
+
+        return view('admin.vouchers.form', compact('voucher'));
+    }
+
+    // 6.9. Cập nhật voucher
+    public function updateVoucher(Request $request, $id)
+    {
+        $voucher = Coupon::findOrFail($id);
+        $data = $this->validateVoucherPayload($request, $voucher);
+
+        $voucher->update($data);
+
+        return redirect()->route('admin.vouchers.index')
+            ->with('success', "Đã cập nhật voucher {$voucher->code}");
+    }
+
+    // 6.10. Bật / tắt voucher
+    public function toggleVoucher($id)
+    {
+        $voucher = Coupon::findOrFail($id);
+        $voucher->is_active = !$voucher->is_active;
+        $voucher->save();
+
+        $status = $voucher->is_active ? 'Đã bật' : 'Đã tạm ngưng';
+
+        return back()->with('success', "{$status} voucher {$voucher->code}");
+    }
+
+    /**
+     * Validate dữ liệu voucher dùng chung cho create/update.
+     */
+    private function validateVoucherPayload(Request $request, ?Coupon $voucher = null): array
+    {
+        $valueRules = ['required', 'numeric', 'min:0'];
+
+        if ($request->input('type') === 'percent') {
+            $valueRules[] = 'max:100';
+        }
+
+        $data = $request->validate([
+            'code' => [
+                'required', 'string', 'max:50', 'regex:/^[A-Za-z0-9_-]+$/',
+                Rule::unique('coupons', 'code')->ignore($voucher?->id),
+            ],
+            'title' => ['required', 'string', 'max:120'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'category' => ['required', 'in:order_discount,free_shipping'],
+            'type' => ['required', 'in:fixed,percent'],
+            'value' => $valueRules,
+            'min_order' => ['nullable', 'numeric', 'min:0'],
+            'max_discount' => ['nullable', 'numeric', 'min:0'],
+            'usage_limit' => ['nullable', 'integer', 'min:1'],
+            'starts_at' => ['nullable', 'date'],
+            'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
+            'is_active' => ['nullable', 'boolean'],
+        ], [
+            'code.required' => 'Vui lòng nhập mã voucher.',
+            'code.unique' => 'Mã voucher này đã tồn tại.',
+            'code.regex' => 'Mã voucher chỉ gồm chữ, số, dấu gạch dưới và gạch ngang.',
+            'title.required' => 'Vui lòng nhập tên voucher.',
+            'value.max' => 'Voucher giảm theo % không được vượt quá 100.',
+            'ends_at.after_or_equal' => 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.',
+        ]);
+
+        $data['code'] = Str::upper(trim($data['code']));
+        $data['min_order'] = $data['min_order'] ?? 0;
+        $data['is_active'] = (bool) ($data['is_active'] ?? true);
+        $data['usage_limit'] = $data['usage_limit'] ?? null;
+
+        return $data;
+    }
+
+    // 7. Quản lý Người dùng
+    public function manageUsers()    {
         $users = User::with('roles')->latest()->paginate(15);
         $roles = Role::all();
         return view('admin.users', compact('users', 'roles'));

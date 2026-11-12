@@ -8,6 +8,7 @@ use App\Models\SanPham;
 use App\Models\User;
 use App\Models\UserActivity;
 use App\Models\UserAiProfile;
+use Illuminate\Support\Str;
 
 /**
  * Vòng "tự huấn luyện" của chatbot — KHÔNG dùng LLM bên ngoài.
@@ -19,6 +20,9 @@ use App\Models\UserAiProfile;
  *     không cần chạy lại rule.
  *  3. Phản hồi 👍/👎 của khách cập nhật quality_score; cặp bị 👎 nhiều sẽ tự tắt.
  *  4. Hành vi xem sản phẩm + chat được tổng hợp vào user_ai_profiles để cá nhân hoá.
+ *
+ * Chuẩn hoá khi so khớp: bỏ dấu tiếng Việt + đổi từ đồng nghĩa về dạng chuẩn,
+ * nên "chinh sach giao hang", "chính sách vận chuyển" và "ship thế nào" đều khớp nhau.
  */
 class ChatbotLearningService
 {
@@ -29,15 +33,86 @@ class ChatbotLearningService
     private const MIN_SHARED_TOKENS = 2;
 
     /**
-     * Chuẩn hoá câu hỏi: lowercase, bỏ dấu câu, gộp khoảng trắng.
+     * Từ đồng nghĩa → cụm chuẩn dùng khi so khớp.
+     * Khoá là cụm chuẩn (đã bỏ dấu), value là các biến thể.
+     *
+     * @var array<string, array<int, string>>
+     */
+    private const SYNONYMS = [
+        'giao hang' => ['ship', 'van chuyen', 'chuyen phat', 'shipper', 'giao nhanh', 'freeship'],
+        'doi tra' => ['hoan hang', 'tra hang', 'return', 'hoan tien', 'doi hang'],
+        'bao hanh' => ['warranty', 'bao tri', 'chinh hang'],
+        'gia' => ['gia ca', 'price', 'bao nhieu tien', 'gia bao nhieu'],
+        'nuoc hoa' => ['perfume', 'fragrance', 'mui huong', 'eau de parfum'],
+        'giay' => ['sneaker', 'shoes', 'giay the thao'],
+        'kinh' => ['mat kinh', 'sunglasses', 'glasses'],
+        'dong ho' => ['watch', 'watches', 'dong ho deo tay'],
+        'thanh toan' => ['payment', 'tra tien', 'chuyen khoan', 'quet ma', 'vietqr'],
+        'voucher' => ['ma giam gia', 'coupon', 'khuyen mai', 'sale', 'giam gia'],
+        'dang nhap' => ['login', 'dang ky', 'register', 'tai khoan', 'quen mat khau'],
+        'hotline' => ['lien he', 'so dien thoai', 'ho tro', 'support', 'tu van'],
+        'ton kho' => ['con hang', 'het hang', 'stock'],
+    ];
+
+    /** Cache map biến thể → cụm chuẩn (xây 1 lần). */
+    private ?array $synonymMap = null;
+
+    /**
+     * Chuẩn hoá câu hỏi: lowercase, bỏ dấu câu, bỏ dấu tiếng Việt, gộp khoảng trắng.
      */
     public function normalize(string $text): string
     {
         $text = mb_strtolower(trim($text), 'UTF-8');
         $text = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $text) ?? '';
+        $text = Str::ascii($text);
         $text = preg_replace('/\s+/u', ' ', $text) ?? '';
+        $text = trim($text);
 
-        return trim($text);
+        return $this->applySynonyms($text);
+    }
+
+    /**
+     * Đổi biến thể đồng nghĩa sang cụm chuẩn — một lượt, tránh thay thế lồng nhau.
+     */
+    private function applySynonyms(string $text): string
+    {
+        if ($text === '') {
+            return $text;
+        }
+
+        $map = $this->synonymMap();
+
+        $pattern = '/(?<![\p{L}\p{N}])('.implode('|', array_map(
+            fn (string $variant) => preg_quote($variant, '/'),
+            array_keys($map)
+        )).')(?![\p{L}\p{N}])/u';
+
+        $replaced = preg_replace_callback($pattern, fn (array $match) => $map[$match[1]], $text);
+
+        return $replaced ?? $text;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function synonymMap(): array
+    {
+        if ($this->synonymMap !== null) {
+            return $this->synonymMap;
+        }
+
+        $map = [];
+
+        foreach (self::SYNONYMS as $canonical => $variants) {
+            foreach ($variants as $variant) {
+                $map[$variant] = $canonical;
+            }
+        }
+
+        // Biến thể dài phải đứng trước để regex ưu tiên khớp cụm dài
+        uksort($map, fn (string $a, string $b) => mb_strlen($b) <=> mb_strlen($a));
+
+        return $this->synonymMap = $map;
     }
 
     /**

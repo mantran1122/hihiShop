@@ -80,6 +80,37 @@ class ChatbotLearningTest extends TestCase
         $this->assertTrue($response->json('learned'));
     }
 
+    public function test_accent_insensitive_question_hits_memory(): void
+    {
+        $this->postJson('/chat/message', ['message' => 'chính sách giao hàng như thế nào?']);
+
+        $response = $this->postJson('/chat/message', [
+            'message' => 'chinh sach giao hang nhu the nao',
+        ]);
+
+        $this->assertTrue($response->json('learned'));
+        $this->assertDatabaseCount('ai_training_pairs', 1);
+    }
+
+    public function test_synonym_question_hits_memory(): void
+    {
+        $this->postJson('/chat/message', ['message' => 'chính sách giao hàng thế nào?']);
+
+        $response = $this->postJson('/chat/message', ['message' => 'ship thế nào?']);
+
+        $this->assertTrue($response->json('learned'));
+    }
+
+    public function test_unrelated_question_does_not_reuse_memory(): void
+    {
+        $this->postJson('/chat/message', ['message' => 'chính sách giao hàng như thế nào?']);
+
+        $response = $this->postJson('/chat/message', ['message' => 'tư vấn nước hoa nam']);
+
+        $this->assertFalse($response->json('learned'));
+        $this->assertDatabaseCount('ai_training_pairs', 2);
+    }
+
     public function test_thumbs_up_increases_quality_score(): void
     {
         $response = $this->postJson('/chat/message', ['message' => 'đổi trả hàng thế nào?']);

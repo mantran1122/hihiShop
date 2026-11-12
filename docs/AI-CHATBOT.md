@@ -58,9 +58,22 @@ App\Models\AiTrainingPair::where('is_active', true)->where('quality_score', '>='
     ->get(['prompt','ideal_response'])->toJson(JSON_UNESCAPED_UNICODE);
 ```
 
+## Chuẩn hoá câu hỏi khi so khớp
+
+Trước khi so khớp, câu hỏi được chuẩn hoá qua 3 bước (xem `normalize()`):
+
+1. Lowercase, bỏ dấu câu, gộp khoảng trắng.
+2. **Bỏ dấu tiếng Việt** (`Str::ascii`) → `chính sách giao hàng` và `chinh sach giao hang` cho cùng kết quả.
+3. **Đổi từ đồng nghĩa về cụm chuẩn** theo bảng `SYNONYMS` trong service:
+   `ship / vận chuyển / chuyển phát → giao hàng`, `hoàn hàng / trả hàng → đổi trả`,
+   `mã giảm giá / coupon / khuyến mãi → voucher`, `qr / chuyển khoản → thanh toán`, …
+
+Nhờ vậy `"ship thế nào"` vẫn khớp với câu đã học `"chính sách giao hàng thế nào"` mà không cần LLM.
+Thêm từ đồng nghĩa bằng cách sửa hằng `SYNONYMS` trong `app/Services/ChatbotLearningService.php`.
+
 ## Giới hạn hiện tại
 
-- So khớp theo **từ khoá**, chưa hiểu ngữ nghĩa/đồng nghĩa ("ship" vs "vận chuyển" chỉ khớp nếu trùng từ).
+- So khớp theo **từ khoá đã chuẩn hoá**, không dùng embedding/ngữ nghĩa sâu: câu hỏi cùng ý nhưng khác hoàn toàn từ vựng vẫn có thể không khớp.
 - Ngưỡng 0.55 và 2 từ trùng có thể chỉnh trong `ChatbotLearningService` (`MATCH_THRESHOLD`, `MIN_SHARED_TOKENS`).
 - Không có hàng đợi huấn luyện nền; việc học diễn ra ngay trong request chat (chi phí rất nhỏ vì chỉ đọc tối đa 300 cặp).
 - Hồ sơ AI cập nhật 200 hoạt động gần nhất mỗi lần chat (nếu dữ liệu lớn nên chuyển sang queue/cron).

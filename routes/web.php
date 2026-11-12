@@ -103,6 +103,14 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/products/{id}', [AdminController::class, 'updateProduct'])->name('products.update');
     Route::post('/products/{id}/toggle-status', [AdminController::class, 'toggleProductStatus'])->name('products.toggleStatus');
 
+    // Quản lý voucher
+    Route::get('/vouchers', [AdminController::class, 'vouchers'])->name('vouchers.index');
+    Route::get('/vouchers/create', [AdminController::class, 'createVoucher'])->name('vouchers.create');
+    Route::post('/vouchers', [AdminController::class, 'storeVoucher'])->name('vouchers.store');
+    Route::get('/vouchers/{id}/edit', [AdminController::class, 'editVoucher'])->name('vouchers.edit');
+    Route::put('/vouchers/{id}', [AdminController::class, 'updateVoucher'])->name('vouchers.update');
+    Route::post('/vouchers/{id}/toggle', [AdminController::class, 'toggleVoucher'])->name('vouchers.toggle');
+
     // Quản lý người dùng
     Route::get('/users', [AdminController::class, 'manageUsers'])->name('users');
     Route::post('/users/{id}/role', [AdminController::class, 'updateUserRole'])->name('users.updateRole');

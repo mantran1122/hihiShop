@@ -187,6 +187,7 @@ Lưu ý:
 - [ ] **Thêm sản phẩm mới** (`/admin/products/create`): nhập tên, danh mục, giá, tồn kho → sản phẩm xuất hiện ở cửa hàng
 - [ ] **Sửa sản phẩm**: đổi tên/giá/tồn kho → cập nhật đúng ở cả trang sản phẩm
 - [ ] Bật/tắt (ẩn/hiện) sản phẩm
+- [ ] **Quản lý voucher** (`/admin/vouchers`): tạo mã mới → thấy mã trong "Kho Voucher" ở trang thanh toán; tắt mã → không áp dụng được nữa
 - [ ] Đổi quyền người dùng
 
 **Chatbot** (tự huấn luyện, không dùng LLM — xem [AI-CHATBOT.md](AI-CHATBOT.md))
