@@ -14,6 +14,9 @@ class SanPham extends Model
     public function bienThes(){ return $this->hasMany(BienTheSanPham::class, 'product_id'); }
     public function anh(){ return $this->hasMany(AnhSanPham::class, 'product_id'); }
     public function images(){ return $this->anh(); }
+    public function reviews(){ return $this->hasMany(Review::class, 'product_id'); }
+    public function approvedReviews(){ return $this->reviews()->where('is_approved', true); }
+    public function wishlists(){ return $this->hasMany(Wishlist::class, 'product_id'); }
 
     public function bienTheMacDinh(){
         return $this->hasOne(BienTheSanPham::class, 'product_id')->where('is_default', true);
@@ -33,6 +36,37 @@ class SanPham extends Model
             return asset($cover->path);
         }
         return asset('images/placeholder.svg');
+    }
+
+    /**
+     * Điểm đánh giá trung bình (1 chữ số thập phân), chỉ tính review đã duyệt.
+     */
+    public function getAverageRatingAttribute(): float
+    {
+        $avg = $this->relationLoaded('approvedReviews')
+            ? $this->approvedReviews->avg('rating')
+            : $this->approvedReviews()->avg('rating');
+
+        return round((float) $avg, 1);
+    }
+
+    public function getReviewCountAttribute(): int
+    {
+        return $this->relationLoaded('approvedReviews')
+            ? $this->approvedReviews->count()
+            : $this->approvedReviews()->count();
+    }
+
+    /**
+     * Sản phẩm đã được khách đang đăng nhập thả tim hay chưa.
+     */
+    public function isWishedBy(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return $this->wishlists()->where('user_id', $user->id)->exists();
     }
 }
 

@@ -83,5 +83,20 @@ class User extends Authenticatable
         return $this->hasMany(ChatSession::class);
     }
 
-    
+    /**
+     * Đánh giá sản phẩm của khách
+     */
+    public function reviews(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /**
+     * Danh sách sản phẩm yêu thích
+     */
+    public function wishlists(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
 }

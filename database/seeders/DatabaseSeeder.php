@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             CouponSeeder::class,
             DemoUserAndRolesSeeder::class,
             RolesSeeder::class,
+            ReviewSeeder::class,
         ]);
     }
 }

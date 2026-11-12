@@ -25,7 +25,7 @@ class ProductSeeder extends Seeder {
         'cat'=>'giay',
         'name'=>'Giày Sneaker Classic Canvas White',
         'price'=>990000,
-        'image'=>null,
+        'image'=>null, // tự động lấy ảnh trong public/images/giay (xem resolveImage)
         'variants'=>[
           ['sku'=>'SH-CL-41','price'=>990000,'stock'=>20,'attrs'=>['size_eu'=>'41','material'=>'Canvas']],
           ['sku'=>'SH-CL-42','price'=>990000,'stock'=>25,'attrs'=>['size_eu'=>'42','material'=>'Canvas']],
@@ -52,6 +52,13 @@ class ProductSeeder extends Seeder {
         ]
       ],
     ];
+
+    foreach ($demo as &$item) {
+      if (empty($item['image'])) {
+        $item['image'] = $this->resolveImage($item['cat']);
+      }
+    }
+    unset($item);
 
     foreach ($demo as $p) {
       $pid = DB::table('products')->insertGetId([
@@ -104,5 +111,56 @@ class ProductSeeder extends Seeder {
         }
       }
     }
+  }
+
+  /**
+   * Tìm ảnh đại diện thật trong public/images/<thư mục>; nếu chưa có thì trả về ảnh minh hoạ.
+   * Thả ảnh .jpg/.png vào public/images/giay rồi seed lại là sản phẩm tự có ảnh.
+   */
+  private function resolveImage(string $categorySlug): string
+  {
+    $folders = [
+      'nuoc-hoa' => 'nuocHoa',
+      'giay' => 'giay',
+      'mat-kinh' => 'matKinh',
+      'dong-ho' => 'DongHo',
+    ];
+
+    $folder = $folders[$categorySlug] ?? null;
+
+    if ($folder) {
+      $dir = public_path('images/'.$folder);
+
+      if (is_dir($dir)) {
+        $files = [];
+        $iterator = new \RecursiveIteratorIterator(
+          new \RecursiveDirectoryIterator($dir, \FilesystemIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $file) {
+          if (!$file->isFile()) {
+            continue;
+          }
+          if (!in_array(strtolower($file->getExtension()), ['jpg', 'jpeg', 'png', 'webp'], true)) {
+            continue;
+          }
+          $files[] = $file->getPathname();
+        }
+
+        sort($files);
+
+        if (!empty($files)) {
+          $relative = str_replace(public_path().DIRECTORY_SEPARATOR, '', $files[0]);
+          return str_replace('\\', '/', $relative);
+        }
+      }
+
+      $placeholder = 'images/placeholder-'.$categorySlug.'.svg';
+      if (is_file(public_path($placeholder))) {
+        return $placeholder;
+      }
+    }
+
+    return 'images/placeholder.svg';
   }
 }

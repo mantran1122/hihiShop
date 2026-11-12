@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" fill="none" role="img" aria-label="Ảnh sản phẩm đang cập nhật">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F8FAFC"/>
+      <stop offset="1" stop-color="#EDF1F6"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F8FAFC"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#DDE4EC"/>
+      <stop offset="1" stop-color="#C6D0DC"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="800" fill="url(#bg)"/>
+
+  <!-- lưới chấm nền -->
+  <g fill="#CBD5E1" opacity="0.35">
+    <circle cx="80" cy="80" r="4"/><circle cx="400" cy="80" r="4"/><circle cx="720" cy="80" r="4"/>
+    <circle cx="80" cy="400" r="4"/><circle cx="720" cy="400" r="4"/>
+    <circle cx="80" cy="720" r="4"/><circle cx="400" cy="720" r="4"/><circle cx="720" cy="720" r="4"/>
+  </g>
+
+  <!-- khung ảnh -->
+  <rect x="150" y="170" width="500" height="400" rx="36" fill="url(#frame)" stroke="#E2E8F0" stroke-width="4"/>
+
+  <!-- icon ảnh: mặt trời + núi -->
+  <circle cx="302" cy="300" r="32" fill="#CBD5E1"/>
+  <path d="M196 500l104-118c10-11 26-11 36 0l86 98 44-46c10-10 26-10 36 0l82 66H196z" fill="url(#hill)"/>
+  <path d="M196 500h408" stroke="#B8C3D1" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- chân khung: dòng chữ -->
+  <text x="400" y="650" font-family="'Segoe UI', system-ui, sans-serif" font-size="30" font-weight="700"
+        letter-spacing="5" fill="#94A3B8" text-anchor="middle">HIHI SHOP</text>
+  <text x="400" y="692" font-family="'Segoe UI', system-ui, sans-serif" font-size="17" font-weight="600"
+        letter-spacing="2" fill="#B6C2D0" text-anchor="middle">ẢNH SẢN PHẨM ĐANG CẬP NHẬT</text>
+</svg>

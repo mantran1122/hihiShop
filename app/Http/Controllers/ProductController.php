@@ -16,7 +16,24 @@ class ProductController extends Controller
     public function show($slug)
     {
         $p = SanPham::with(['bienThes','anh','danhMuc'])->where('slug',$slug)->firstOrFail();
-        return view('product', compact('p'));
+
+        $reviews = $p->approvedReviews()->with('user')->latest()->get();
+
+        $reviewStats = [
+            'count' => $reviews->count(),
+            'average' => round((float) $reviews->avg('rating'), 1),
+            'distribution' => collect(range(5, 1))->mapWithKeys(
+                fn ($star) => [$star => $reviews->where('rating', $star)->count()]
+            ),
+        ];
+
+        $myReview = auth()->check()
+            ? $reviews->firstWhere('user_id', auth()->id())
+            : null;
+
+        $isWished = $p->isWishedBy(auth()->user());
+
+        return view('product', compact('p', 'reviews', 'reviewStats', 'myReview', 'isWished'));
     }
     // app/Http/Controllers/ProductController.php
     public function search(Request $request)

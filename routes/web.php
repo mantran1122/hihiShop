@@ -10,6 +10,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\WishlistController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +61,15 @@ Route::post('/payment/webhook', [CheckoutController::class, 'handleWebhook'])->n
 Route::middleware('auth')->prefix('my-orders')->name('orders.')->group(function () {
     Route::get('/', [OrderController::class, 'index'])->name('index');
     Route::get('/{code}', [OrderController::class, 'show'])->name('show');
+});
+
+// Đánh giá sản phẩm & Danh sách yêu thích (yêu cầu đăng nhập)
+Route::middleware('auth')->group(function () {
+    Route::post('/product/{product}/review', [ReviewController::class, 'store'])->name('review.store');
+    Route::delete('/review/{review}', [ReviewController::class, 'destroy'])->name('review.destroy');
+
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/{product}/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 });
 
 // Dashboard người dùng
