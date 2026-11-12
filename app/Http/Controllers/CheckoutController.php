@@ -359,15 +359,12 @@ class CheckoutController extends Controller
             ->where('code', $code)
             ->firstOrFail();
 
-        if (Auth::check() && $order->user_id && $order->user_id !== Auth::id() && !Auth::user()->hasRole('Admin')) {
-            abort(403, 'Bạn không có quyền truy cập đơn hàng này.');
-        }
+        $this->authorizeOrderAccess($order);
 
         if ($order->payment_status === 'paid') {
             return redirect()->route('checkout.success', $order->code)
                 ->with('info', 'Đơn hàng này đã được thanh toán thành công trước đó.');
         }
-
         $bankId = config('payment.vietqr.bank_id', 'MB');
         $bankName = config('payment.vietqr.bank_name', 'MB Bank (Quân Đội)');
         $accountNo = config('payment.vietqr.account_no', '0988889999');
@@ -404,6 +401,8 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Đơn hàng không tồn tại.'], 404);
         }
 
+        $this->authorizeOrderAccess($order);
+
         return response()->json([
             'success' => true,
             'code' => $order->code,
@@ -420,6 +419,8 @@ class CheckoutController extends Controller
     public function simulatePayment(Request $req, $code)
     {
         $order = DonHang::where('code', $code)->firstOrFail();
+
+        $this->authorizeOrderAccess($order);
 
         $order->update([
             'payment_status' => 'paid',
@@ -515,6 +516,27 @@ class CheckoutController extends Controller
             ->where('code', $code)
             ->firstOrFail();
 
+        $this->authorizeOrderAccess($order);
+
         return view('orders.success', compact('order'));
+    }
+
+    /**
+     * Chỉ chủ đơn hoặc Admin được xem/thao tác trên đơn hàng.
+     * Trang xác nhận đơn và mã QR có thể chứa thông tin cá nhân nên phải chặn truy cập chéo.
+     */
+    private function authorizeOrderAccess(DonHang $order): void
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            abort(403, 'Vui lòng đăng nhập để xem đơn hàng.');
+        }
+
+        $isOwner = $order->user_id !== null && (int) $order->user_id === (int) $user->id;
+
+        if (!$isOwner && !$user->hasRole('Admin')) {
+            abort(403, 'Bạn không có quyền truy cập đơn hàng này.');
+        }
     }
 }

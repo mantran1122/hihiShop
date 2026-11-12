@@ -49,10 +49,10 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/', [CheckoutController::class, 'index'])->name('index');
     Route::post('/', [CheckoutController::class, 'place'])->name('place');
     Route::post('/calculate', [CheckoutController::class, 'calculate'])->name('calculate');
-    Route::get('/payment/{code}', [CheckoutController::class, 'qrPayment'])->name('payment.qr');
-    Route::get('/payment/{code}/status', [CheckoutController::class, 'checkStatus'])->name('payment.status');
-    Route::post('/payment/{code}/simulate', [CheckoutController::class, 'simulatePayment'])->name('payment.simulate');
-    Route::get('/success/{code}', [CheckoutController::class, 'success'])->name('success');
+    Route::get('/payment/{code}', [CheckoutController::class, 'qrPayment'])->middleware('auth')->name('payment.qr');
+    Route::get('/payment/{code}/status', [CheckoutController::class, 'checkStatus'])->middleware('auth')->name('payment.status');
+    Route::post('/payment/{code}/simulate', [CheckoutController::class, 'simulatePayment'])->middleware('auth')->name('payment.simulate');
+    Route::get('/success/{code}', [CheckoutController::class, 'success'])->middleware('auth')->name('success');
 });
 
 // Webhook thanh toán (Nhận tín hiệu ngân hàng / PayOS / Casso)
