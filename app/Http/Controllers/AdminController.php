@@ -14,6 +14,7 @@ use App\Models\SanPham;
 use App\Models\BienTheSanPham;
 use App\Models\User;
 use App\Models\DanhMuc;
+use App\Models\ThuongHieu;
 use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
@@ -64,18 +65,37 @@ class AdminController extends Controller
             'status' => 'required|in:pending,processing,shipped,delivered,completed,cancelled'
         ]);
 
-        $order = DonHang::findOrFail($id);
-        $order->status = $request->status;
+        $order = DonHang::with('mucs')->findOrFail($id);
+        $wasCancelled = $order->status === 'cancelled';
 
-        // Nếu hoàn thành đơn hàng, tự động đánh dấu đã thanh toán
-        if (in_array($request->status, ['completed', 'delivered'])) {
-            $order->payment_status = 'paid';
-            $order->shipping_status = 'fulfilled';
-        } elseif ($request->status === 'cancelled') {
-            $order->shipping_status = 'cancelled';
-        }
+        DB::transaction(function () use ($request, $order, $wasCancelled) {
+            // Huỷ đơn → hoàn tồn kho và trả lại lượt dùng voucher
+            if ($request->status === 'cancelled' && !$wasCancelled) {
+                foreach ($order->mucs as $item) {
+                    if ($item->variant_id) {
+                        BienTheSanPham::whereKey($item->variant_id)->increment('stock_qty', $item->qty);
+                    }
+                }
 
-        $order->save();
+                foreach ([$order->coupon_code, $order->shipping_coupon_code] as $code) {
+                    if (!empty($code)) {
+                        Coupon::where('code', $code)->where('used', '>', 0)->decrement('used');
+                    }
+                }
+            }
+
+            $order->status = $request->status;
+
+            // Nếu hoàn thành đơn hàng, tự động đánh dấu đã thanh toán
+            if (in_array($request->status, ['completed', 'delivered'])) {
+                $order->payment_status = 'paid';
+                $order->shipping_status = 'fulfilled';
+            } elseif ($request->status === 'cancelled') {
+                $order->shipping_status = 'cancelled';
+            }
+
+            $order->save();
+        });
 
         return back()->with('success', "Đã cập nhật trạng thái đơn hàng #{$order->code} sang: {$order->status}");
     }
@@ -405,6 +425,191 @@ class AdminController extends Controller
         $review->delete();
 
         return back()->with('success', 'Đã xoá đánh giá.');
+    }
+
+    // 6.14. Danh sách danh mục
+    public function categories()
+    {
+        $categories = DanhMuc::withCount('sanPhams')
+            ->orderBy('position')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.categories.index', compact('categories'));
+    }
+
+    // 6.15. Form tạo danh mục
+    public function createCategory()
+    {
+        return view('admin.categories.form', [
+            'category' => null,
+            'parents' => DanhMuc::orderBy('name')->get(),
+        ]);
+    }
+
+    // 6.16. Lưu danh mục mới
+    public function storeCategory(Request $request)
+    {
+        $data = $this->validateCategoryPayload($request);
+
+        DanhMuc::create($data);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', "Đã thêm danh mục: {$data['name']}");
+    }
+
+    // 6.17. Form sửa danh mục
+    public function editCategory($id)
+    {
+        $category = DanhMuc::findOrFail($id);
+
+        return view('admin.categories.form', [
+            'category' => $category,
+            'parents' => DanhMuc::where('id', '!=', $category->id)->orderBy('name')->get(),
+        ]);
+    }
+
+    // 6.18. Cập nhật danh mục
+    public function updateCategory(Request $request, $id)
+    {
+        $category = DanhMuc::findOrFail($id);
+        $data = $this->validateCategoryPayload($request, $category);
+
+        $category->update($data);
+
+        return redirect()->route('admin.categories.index')
+            ->with('success', "Đã cập nhật danh mục: {$category->name}");
+    }
+
+    // 6.19. Bật / tắt danh mục
+    public function toggleCategory($id)
+    {
+        $category = DanhMuc::withCount('sanPhams')->findOrFail($id);
+        $productCount = (int) ($category->san_phams_count ?? 0);
+
+        if ($category->is_active && $productCount > 0) {
+            return back()->with('error', "Danh mục \"{$category->name}\" còn {$productCount} sản phẩm. Hãy chuyển sản phẩm sang danh mục khác trước khi ẩn.");
+        }
+
+        $category->is_active = !$category->is_active;
+        $category->save();
+
+        $status = $category->is_active ? 'Đã bật' : 'Đã ẩn';
+
+        return back()->with('success', "{$status} danh mục: {$category->name}");
+    }
+
+    /**
+     * Validate dữ liệu danh mục (create/update).
+     */
+    private function validateCategoryPayload(Request $request, ?DanhMuc $category = null): array
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:120'],
+            'slug' => [
+                'nullable', 'string', 'max:140', 'regex:/^[a-z0-9-]+$/',
+                Rule::unique('categories', 'slug')->ignore($category?->id),
+            ],
+            'description' => ['nullable', 'string', 'max:500'],
+            'parent_id' => ['nullable', 'integer', 'exists:categories,id', Rule::notIn([$category?->id])],
+            'position' => ['nullable', 'integer', 'min:0', 'max:999'],
+            'is_active' => ['nullable', 'boolean'],
+        ], [
+            'name.required' => 'Vui lòng nhập tên danh mục.',
+            'slug.regex' => 'Slug chỉ gồm chữ thường, số và dấu gạch ngang.',
+            'slug.unique' => 'Slug này đã được dùng.',
+            'parent_id.not_in' => 'Danh mục cha không thể là chính nó.',
+        ]);
+
+        $data['slug'] = !empty($data['slug']) ? $data['slug'] : Str::slug($data['name']);
+        $data['parent_id'] = $data['parent_id'] ?? null;
+        $data['position'] = $data['position'] ?? 0;
+        $data['is_active'] = (bool) ($data['is_active'] ?? true);
+
+        return $data;
+    }
+
+    // 6.20. Danh sách thương hiệu
+    public function brands()
+    {
+        $brands = ThuongHieu::withCount('sanPhams')->orderBy('name')->get();
+
+        return view('admin.brands.index', compact('brands'));
+    }
+
+    // 6.21. Form tạo thương hiệu
+    public function createBrand()
+    {
+        return view('admin.brands.form', ['brand' => null]);
+    }
+
+    // 6.22. Lưu thương hiệu
+    public function storeBrand(Request $request)
+    {
+        $data = $this->validateBrandPayload($request);
+
+        ThuongHieu::create($data);
+
+        return redirect()->route('admin.brands.index')
+            ->with('success', "Đã thêm thương hiệu: {$data['name']}");
+    }
+
+    // 6.23. Form sửa thương hiệu
+    public function editBrand($id)
+    {
+        return view('admin.brands.form', ['brand' => ThuongHieu::findOrFail($id)]);
+    }
+
+    // 6.24. Cập nhật thương hiệu
+    public function updateBrand(Request $request, $id)
+    {
+        $brand = ThuongHieu::findOrFail($id);
+        $brand->update($this->validateBrandPayload($request, $brand));
+
+        return redirect()->route('admin.brands.index')
+            ->with('success', "Đã cập nhật thương hiệu: {$brand->name}");
+    }
+
+    // 6.25. Xoá thương hiệu (chỉ khi chưa gắn sản phẩm)
+    public function destroyBrand($id)
+    {
+        $brand = ThuongHieu::withCount('sanPhams')->findOrFail($id);
+        $productCount = (int) ($brand->san_phams_count ?? 0);
+
+        if ($productCount > 0) {
+            return back()->with('error', "Thương hiệu \"{$brand->name}\" đang gắn với {$productCount} sản phẩm, không thể xoá.");
+        }
+
+        $brand->delete();
+
+        return back()->with('success', "Đã xoá thương hiệu: {$brand->name}");
+    }
+
+    /**
+     * Validate dữ liệu thương hiệu (create/update).
+     */
+    private function validateBrandPayload(Request $request, ?ThuongHieu $brand = null): array
+    {
+        $data = $request->validate([
+            'name' => [
+                'required', 'string', 'max:120',
+                Rule::unique('brands', 'name')->ignore($brand?->id),
+            ],
+            'slug' => [
+                'nullable', 'string', 'max:140', 'regex:/^[a-z0-9-]+$/',
+                Rule::unique('brands', 'slug')->ignore($brand?->id),
+            ],
+            'origin' => ['nullable', 'string', 'max:80'],
+        ], [
+            'name.required' => 'Vui lòng nhập tên thương hiệu.',
+            'name.unique' => 'Tên thương hiệu này đã tồn tại.',
+            'slug.unique' => 'Slug này đã được dùng.',
+            'slug.regex' => 'Slug chỉ gồm chữ thường, số và dấu gạch ngang.',
+        ]);
+
+        $data['slug'] = !empty($data['slug']) ? $data['slug'] : Str::slug($data['name']);
+
+        return $data;
     }
 
     // 7. Quản lý Người dùng

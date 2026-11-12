@@ -21,7 +21,8 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:10,1');
 
     // Socialite OAuth Routes (Google, Facebook)
     Route::get('auth/{provider}/redirect', [SocialAuthController::class, 'redirectToProvider'])

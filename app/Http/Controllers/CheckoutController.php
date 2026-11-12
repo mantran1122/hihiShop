@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GioHang;
+use App\Models\BienTheSanPham;
 use App\Models\DonHang;
 use App\Models\MucDonHang;
 use App\Models\DiaChi;
@@ -15,6 +16,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
 {
@@ -250,6 +252,30 @@ class CheckoutController extends Controller
             $baseShippingFee, $totalShippingDiscount, $finalShippingFee, $grandTotal,
             $validCoupon, $validShipCoupon
         ) {
+            // 0. Khoá dòng biến thể và kiểm tra tồn kho lần cuối (chống oversell khi
+            //    nhiều khách đặt cùng lúc). Nếu không đủ → rollback toàn bộ đơn.
+            $lockedVariants = [];
+
+            foreach ($cart->mucs as $it) {
+                if (!$it->variant_id) {
+                    continue;
+                }
+
+                $variant = BienTheSanPham::whereKey($it->variant_id)
+                    ->lockForUpdate()
+                    ->first();
+
+                $available = (int) ($variant->stock_qty ?? 0);
+
+                if ($available < $it->qty) {
+                    throw ValidationException::withMessages([
+                        'cart' => ($it->sanPham->name ?? 'Sản phẩm')." chỉ còn {$available} sản phẩm trong kho.",
+                    ]);
+                }
+
+                $lockedVariants[$it->variant_id] = $variant;
+            }
+
             // 1. Lưu địa chỉ giao hàng
             $address = DiaChi::create([
                 'user_id' => $req->user()?->id,
@@ -320,7 +346,9 @@ class CheckoutController extends Controller
                     'subtotal' => $it->line_total,
                 ]);
 
-                if ($it->bienThe) {
+                if ($it->variant_id && isset($lockedVariants[$it->variant_id])) {
+                    $lockedVariants[$it->variant_id]->decrement('stock_qty', $it->qty);
+                } elseif ($it->bienThe) {
                     $it->bienThe->decrement('stock_qty', $it->qty);
                 }
             }

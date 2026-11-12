@@ -336,7 +336,8 @@ async function loadChatHistory() {
 
 function formatMarkdownText(txt) {
     if (!txt) return "";
-    return txt
+    // Escape HTML trước để dữ liệu từ CSDL (tên sản phẩm...) không chèn được thẻ lạ
+    return escapeHtml(String(txt))
         .replace(/\n\n/g, '<br><br>')
         .replace(/\n/g, '<br>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')

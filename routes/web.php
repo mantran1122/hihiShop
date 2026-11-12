@@ -20,8 +20,8 @@ use App\Http\Controllers\WishlistController;
 */
 
 // Real-time AI Chatbot
-Route::post('/chat/message', [ChatbotController::class, 'sendMessage'])->name('chat.message');
-Route::post('/chat/feedback', [ChatbotController::class, 'feedback'])->name('chat.feedback');
+Route::post('/chat/message', [ChatbotController::class, 'sendMessage'])->middleware('throttle:40,1')->name('chat.message');
+Route::post('/chat/feedback', [ChatbotController::class, 'feedback'])->middleware('throttle:40,1')->name('chat.feedback');
 Route::get('/chat/history', [ChatbotController::class, 'getHistory'])->name('chat.history');
 
 // Trang chủ & Cửa hàng
@@ -115,6 +115,22 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/reviews', [AdminController::class, 'reviews'])->name('reviews.index');
     Route::post('/reviews/{id}/toggle', [AdminController::class, 'toggleReview'])->name('reviews.toggle');
     Route::delete('/reviews/{id}', [AdminController::class, 'destroyReview'])->name('reviews.destroy');
+
+    // Quản lý danh mục
+    Route::get('/categories', [AdminController::class, 'categories'])->name('categories.index');
+    Route::get('/categories/create', [AdminController::class, 'createCategory'])->name('categories.create');
+    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
+    Route::get('/categories/{id}/edit', [AdminController::class, 'editCategory'])->name('categories.edit');
+    Route::put('/categories/{id}', [AdminController::class, 'updateCategory'])->name('categories.update');
+    Route::post('/categories/{id}/toggle', [AdminController::class, 'toggleCategory'])->name('categories.toggle');
+
+    // Quản lý thương hiệu
+    Route::get('/brands', [AdminController::class, 'brands'])->name('brands.index');
+    Route::get('/brands/create', [AdminController::class, 'createBrand'])->name('brands.create');
+    Route::post('/brands', [AdminController::class, 'storeBrand'])->name('brands.store');
+    Route::get('/brands/{id}/edit', [AdminController::class, 'editBrand'])->name('brands.edit');
+    Route::put('/brands/{id}', [AdminController::class, 'updateBrand'])->name('brands.update');
+    Route::delete('/brands/{id}', [AdminController::class, 'destroyBrand'])->name('brands.destroy');
 
     // Quản lý người dùng
     Route::get('/users', [AdminController::class, 'manageUsers'])->name('users');

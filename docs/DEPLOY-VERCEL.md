@@ -189,6 +189,8 @@ Lưu ý:
 - [ ] Bật/tắt (ẩn/hiện) sản phẩm
 - [ ] **Quản lý voucher** (`/admin/vouchers`): tạo mã mới → thấy mã trong "Kho Voucher" ở trang thanh toán; tắt mã → không áp dụng được nữa
 - [ ] **Quản lý đánh giá** (`/admin/reviews`): ẩn một đánh giá → đánh giá đó biến mất khỏi trang sản phẩm; bấm Duyệt để hiện lại
+- [ ] **Quản lý danh mục / thương hiệu** (`/admin/categories`, `/admin/brands`): thêm danh mục mới → hiện ở menu cửa hàng; danh mục còn sản phẩm thì không cho ẩn
+- [ ] Huỷ một đơn đã đặt → tồn kho được cộng lại
 - [ ] Đổi quyền người dùng
 
 **Chatbot** (tự huấn luyện, không dùng LLM — xem [AI-CHATBOT.md](AI-CHATBOT.md))
