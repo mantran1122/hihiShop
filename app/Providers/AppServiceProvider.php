@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Validation\Rules\Password;
 use App\Models\GioHang;
 use App\Models\DanhMuc;
 use App\Models\Setting;
@@ -27,6 +28,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useTailwind();
+
+        // Production: bắt buộc mật khẩu mạnh hơn (>=10 ký tự, có hoa/thường/số)
+        Password::defaults(function () {
+            return $this->app->isProduction()
+                ? Password::min(10)->letters()->mixedCase()->numbers()
+                : Password::min(8);
+        });
 
         // Share Cart Count and Categories to header across views
         View::composer(['layouts.shop', 'partials.header'], function ($view) {
