@@ -110,6 +110,9 @@ if (($_GET['__probe'] ?? null) === '1') {
         'session_driver' => getenv('SESSION_DRIVER') ?: ($_ENV['SESSION_DRIVER'] ?? null),
         'vendor_autoload' => is_file(dirname(__DIR__).'/vendor/autoload.php'),
         'bootstrap_packages' => is_file(dirname(__DIR__).'/bootstrap/cache/packages.php'),
+        'bootstrap_providers' => is_file(dirname(__DIR__).'/bootstrap/providers.php'),
+        'config_files' => count(glob(dirname(__DIR__).'/config/*.php') ?: []),
+        'view_provider' => is_file(dirname(__DIR__).'/vendor/laravel/framework/src/Illuminate/View/ViewServiceProvider.php'),
         'db_ca_file' => is_file(dirname(__DIR__).'/storage/certs/tidb-ca.pem'),
         'storage_writable' => is_writable(dirname(__DIR__).'/storage'),
         'tmp_writable' => is_writable(sys_get_temp_dir()),
@@ -160,7 +163,12 @@ try {
             'message' => $e->getMessage(),
             'file' => basename($e->getFile()),
             'line' => $e->getLine(),
-        ]);
+            'previous' => $e->getPrevious() ? get_class($e->getPrevious()).': '.$e->getPrevious()->getMessage() : null,
+            'trace' => array_map(
+                fn ($frame) => basename($frame['file'] ?? '?').':'.($frame['line'] ?? '?').' '.($frame['class'] ?? '').($frame['type'] ?? '').($frame['function'] ?? ''),
+                array_slice($e->getTrace(), 0, 12)
+            ),
+        ], JSON_PRETTY_PRINT);
         return;
     }
 
