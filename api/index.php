@@ -78,16 +78,11 @@ $defaults = [
     'LOG_STACK' => 'stderr',
 ];
 
-// Manifest đã được commit sẵn trong deployment → dùng trực tiếp (không cần ghi).
-// Nếu vì lý do nào đó thiếu file, mới trỏ sang /tmp để Laravel tự build lại.
+// Manifest bắt buộc phải ghi được. Trên Vercel bootstrap/cache là read-only nên
+// trỏ sang /tmp để Laravel tự build lại theo đúng dependency production (--no-dev).
 if (str_starts_with($tmpBase, '/')) {
-    if (!is_file(dirname(__DIR__).'/bootstrap/cache/packages.php')) {
-        $defaults['APP_PACKAGES_CACHE'] = $tmpBase.'/packages.php';
-    }
-
-    if (!is_file(dirname(__DIR__).'/bootstrap/cache/services.php')) {
-        $defaults['APP_SERVICES_CACHE'] = $tmpBase.'/services.php';
-    }
+    $defaults['APP_PACKAGES_CACHE'] = $tmpBase.'/packages.php';
+    $defaults['APP_SERVICES_CACHE'] = $tmpBase.'/services.php';
 }
 
 foreach ($defaults as $key => $value) {

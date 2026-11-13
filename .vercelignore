@@ -6,6 +6,7 @@
 /tests
 /images
 /storage/logs
+/bootstrap/cache/*.php
 *.md
 .phpunit.result.cache
 /*.png
