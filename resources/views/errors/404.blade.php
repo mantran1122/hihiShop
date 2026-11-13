@@ -1,18 +1,18 @@
-a!DOCTYPE html>
-ahtml lang="vi" class="h-full">
-ahead>
-    ameta charset="utf-8">
-    ameta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    atitle>404 - Look like you're lost | HIHI Shopa/title>
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>404 - Look like you're lost | HIHI Shop</title>
 
-    a!-- Google Fonts -->
-    alink rel="preconnect" href="https://fonts.googleapis.com">
-    alink rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    alink href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    astyle>
+    <style>
         /* =========================================================
            Original 404 Caveman Animated Page (InfiWeb Craft Style)
            ========================================================= */
@@ -131,59 +131,59 @@ ahead>
                 margin-top: -30px;
             }
         }
-    a/style>
-a/head>
-abody>
+    </style>
+</head>
+<body>
 
-    a!-- Header bar -->
-    aheader class="w-full max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        aa href="{{ route('home') }}" class="flex items-center gap-2 group text-decoration-none">
-            aspan class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-600 to-rose-400 text-white flex items-center justify-center font-black text-lg shadow-sm">
+    <!-- Header bar -->
+    <header class="w-full max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <a href="{{ route('home') }}" class="flex items-center gap-2 group text-decoration-none">
+            <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-600 to-rose-400 text-white flex items-center justify-center font-black text-lg shadow-sm">
                 H
-            a/span>
-            aspan class="text-xl font-black tracking-tight text-slate-900" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-                HIHIaspan class="text-rose-600">Shopa/span>
-            a/span>
-        a/a>
+            </span>
+            <span class="text-xl font-black tracking-tight text-slate-900" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                HIHI<span class="text-rose-600">Shop</span>
+            </span>
+        </a>
 
-        adiv class="flex items-center gap-2 text-xs font-semibold text-slate-500" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-            aspan>Hotline hỗ trợ:a/span>
-            aa href="tel:19000129" class="text-rose-600 font-bold hover:underline">1900 0129a/a>
-        a/div>
-    a/header>
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-500" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+            <span>Hotline hỗ trợ:</span>
+            <a href="tel:{{ $siteHotlineTel }}" class="text-rose-600 font-bold hover:underline">{{ $siteHotline }}</a>
+        </div>
+    </header>
 
-    a!-- Main Section (Original InfiWeb Craft Animated 404) -->
-    asection class="page_404">
-        adiv class="max-w-3xl mx-auto px-4 w-full">
+    <!-- Main Section (Original InfiWeb Craft Animated 404) -->
+    <section class="page_404">
+        <div class="max-w-3xl mx-auto px-4 w-full">
             
-            a!-- Animated Background with Moving Caveman and "404" -->
-            adiv class="four_zero_four_bg">
-                ah1>404a/h1>
-            a/div>
+            <!-- Animated Background with Moving Caveman and "404" -->
+            <div class="four_zero_four_bg">
+                <h1>404</h1>
+            </div>
 
-            a!-- Content Box -->
-            adiv class="contant_box_404">
-                ah3>Look like you're losta/h3>
-                ap>The page you are looking for is not available!a/p>
+            <!-- Content Box -->
+            <div class="contant_box_404">
+                <h3>Look like you're lost</h3>
+                <p>The page you are looking for is not available!</p>
 
-                a!-- Actions -->
-                adiv class="flex items-center justify-center gap-2 flex-wrap">
-                    aa href="{{ route('home') }}" class="link_404">
+                <!-- Actions -->
+                <div class="flex items-center justify-center gap-2 flex-wrap">
+                    <a href="{{ route('home') }}" class="link_404">
                         Go to Home
-                    a/a>
-                    aa href="{{ route('product.index') }}" class="link_secondary">
+                    </a>
+                    <a href="{{ route('product.index') }}" class="link_secondary">
                         Xem sản phẩm khác →
-                    a/a>
-                a/div>
-            a/div>
+                    </a>
+                </div>
+            </div>
 
-        a/div>
-    a/section>
+        </div>
+    </section>
 
-    a!-- Footer copyright -->
-    afooter class="w-full py-4 text-center text-xs text-slate-400 border-t border-slate-100" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-        ap>&copy; {{ date('Y') }} HIHI-SHOP. Phụ kiện & Thời trang cao cấp.a/p>
-    a/footer>
+    <!-- Footer copyright -->
+    <footer class="w-full py-4 text-center text-xs text-slate-400 border-t border-slate-100" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+        <p>&copy; {{ date('Y') }} HIHI-SHOP. Phụ kiện & Thời trang cao cấp.</p>
+    </footer>
 
-a/body>
-a/html>
+</body>
+</html>

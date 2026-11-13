@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="csrf-token" content="ljRmWV6HXnG9dFWXlKpRmKWFLTAZ0dDaQzkqm79i">
+
+    <title>HIHI Shop - Phụ Kiện & Thời Trang Cao Cấp</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles & Scripts -->
+    <link rel="preload" as="style" href="https://hihi-shop.vercel.app/build/assets/app-Bj8tcpHE.css" /><link rel="preload" as="style" href="https://hihi-shop.vercel.app/build/assets/home-DFoywtQx.css" /><link rel="preload" as="style" href="https://hihi-shop.vercel.app/build/assets/app-CSXic_Zd.css" /><link rel="modulepreload" as="script" href="https://hihi-shop.vercel.app/build/assets/app-BFY36td6.js" /><link rel="modulepreload" as="script" href="https://hihi-shop.vercel.app/build/assets/home-DFjLKu6z.js" /><link rel="stylesheet" href="https://hihi-shop.vercel.app/build/assets/app-Bj8tcpHE.css" /><link rel="stylesheet" href="https://hihi-shop.vercel.app/build/assets/home-DFoywtQx.css" /><link rel="stylesheet" href="https://hihi-shop.vercel.app/build/assets/app-CSXic_Zd.css" /><script type="module" src="https://hihi-shop.vercel.app/build/assets/app-BFY36td6.js"></script><script type="module" src="https://hihi-shop.vercel.app/build/assets/home-DFjLKu6z.js"></script>
+    </head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-rose-500 selection:text-white home-theme">
+
+    a!-- resources/views/partials/header.blade.php -->
+aheader x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-200 shadow-sm">
+    a!-- Top Announcement Bar -->
+        adiv class="bg-slate-900 text-slate-300 text-xs py-2 px-4 sm:px-6 lg:px-8">
+        adiv class="max-w-7xl mx-auto flex items-center justify-between">
+            adiv class="flex items-center gap-2">
+                aspan class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse">a/span>
+                aspan class="font-medium text-slate-200">Hỗ trợ giao hàng COD toàn quốc cho tất cả đơn hànga/span>
+            a/div>
+            adiv class="hidden sm:flex items-center gap-4 text-slate-300">
+                aa href="tel:19000129" class="hover:text-white transition flex items-center gap-1.5 font-medium">
+                    asvg class="w-3.5 h-3.5 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">apath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>a/svg>
+                    Hotline: 1900 0129
+                a/a>
+                aspan>•a/span>
+                aspan class="font-medium">Chính hãng 100%a/span>
+            a/div>
+        a/div>
+    a/div>
+    
+    a!-- Main Navigation Bar -->
+    adiv class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        adiv class="flex items-center justify-between h-16 sm:h-20 gap-4">
+            
+            a!-- Mobile Menu Toggle Button -->
+            abutton @click="mobileMenuOpen = !mobileMenuOpen" type="button" class="lg:hidden p-2 -ml-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500" aria-label="Menu">
+                asvg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">apath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>a/svg>
+                asvg x-show="mobileMenuOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">apath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>a/svg>
+            a/button>
+
+            a!-- Brand Logo -->
+            aa href="https://hihi-shop.vercel.app" class="flex items-center gap-2 text-2xl font-black tracking-tight text-slate-900 group">
+                aspan class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-600 to-rose-400 text-white flex items-center justify-center font-black text-lg shadow-sm shadow-rose-500/30 group-hover:scale-105 transition-transform duration-200">
+                    H
+                a/span>
+                aspan>HIHIaspan class="text-rose-600">Shopa/span>a/span>
+            a/a>
+
+            a!-- Search Bar (Desktop & Tablet) -->
+            adiv class="hidden md:flex flex-1 max-w-lg mx-6">
+                aform action="https://hihi-shop.vercel.app/search" method="GET" class="relative w-full">
+                    ainput 
+                        type="search" 
+                        name="q" 
+                        value="" 
+                        placeholder="Tìm kiếm nước hoa, giày, mắt kính, đồng hồ..." 
+                        class="w-full pl-11 pr-24 py-2.5 bg-slate-100/80 border border-transparent rounded-full text-sm text-slate-900 placeholder-slate-400 transition-all duration-200 focus:bg-white focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20 focus:outline-none"
+                    >
+                    adiv class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                        asvg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">apath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>a/svg>
+                    a/div>
+                    abutton type="submit" class="absolute inset-y-1 right-1 px-4 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-full transition shadow-sm cursor-pointer flex items-center">
+                        Tìm kiếm
+                    a/button>
+                a/form>
+            a/div>
+
+            a!-- Action Buttons & Account -->
+            adiv class="flex items-center gap-3 sm:gap-4">
+                                    adiv class="hidden sm:flex items-center gap-2 text-sm">
+                        aa href="https://hihi-shop.vercel.app/login" class="px-3 py-1.5 text-slate-600 hover:text-slate-900 font-semibold transition">
+                            Đăng nhập
+                        a/a>
+                        aa href="https://hihi-shop.vercel.app/register" class="px-3.5 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl font-bold transition">
+                            Đăng ký
+                        a/a>
+                    a/div>
+                
+                a!-- Wishlist Button -->
+                
+                a!-- Cart Button -->
+                                    aa href="https://hihi-shop.vercel.app/cart" class="relative inline-flex items-center gap-2.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-800 hover:text-rose-600 border border-slate-200/60 hover:border-rose-200 transition-all duration-200 font-bold text-sm shadow-sm" title="Đăng nhập để xem giỏ hàng">
+                        asvg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            apath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        a/svg>
+                        aspan class="hidden sm:inline">Giỏ hànga/span>
+                    a/a>
+                            a/div>
+
+        a/div>
+    a/div>
+
+    a!-- Subnav: Category Pills with smooth horizontal scroll -->
+    anav class="border-t border-slate-100 bg-slate-50/80">
+        adiv class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            adiv class="flex items-center gap-2 py-2.5 overflow-x-auto no-scrollbar">
+                aa href="https://hihi-shop.vercel.app" class="px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors bg-white text-rose-600 shadow-sm border border-slate-200/80">
+                    Trang chủ
+                a/a>
+
+                                                            aa href="https://hihi-shop.vercel.app/category/nuoc-hoa" class="px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                            Nước hoa
+                        a/a>
+                                            aa href="https://hihi-shop.vercel.app/category/giay" class="px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                            Giày
+                        a/a>
+                                            aa href="https://hihi-shop.vercel.app/category/mat-kinh" class="px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                            Mắt kính
+                        a/a>
+                                            aa href="https://hihi-shop.vercel.app/category/dong-ho" class="px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                            Đồng hồ
+                        a/a>
+                                    
+                aa href="https://hihi-shop.vercel.app/products" class="px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors text-slate-600 hover:text-slate-900 hover:bg-white/60">
+                    Tất cả sản phẩm
+                a/a>
+            a/div>
+        a/div>
+    a/nav>
+
+    a!-- Mobile Drawer Menu (Alpine) -->
+    adiv x-show="mobileMenuOpen" x-cloak class="lg:hidden border-t border-slate-200 bg-white shadow-xl px-4 py-5 space-y-4">
+        a!-- Mobile Search Form -->
+        aform action="https://hihi-shop.vercel.app/search" method="GET" class="relative">
+            ainput 
+                type="search" 
+                name="q" 
+                value="" 
+                placeholder="Tìm sản phẩm..." 
+                class="w-full pl-10 pr-4 py-2.5 bg-slate-100 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-rose-500 border border-transparent focus:border-rose-500"
+            >
+            adiv class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                asvg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">apath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>a/svg>
+            a/div>
+        a/form>
+
+        a!-- Mobile User Links -->
+        adiv class="pt-2 border-t border-slate-100">
+                            adiv class="grid grid-cols-2 gap-2">
+                    aa href="https://hihi-shop.vercel.app/login" class="btn-secondary text-xs py-2">Đăng nhậpa/a>
+                    aa href="https://hihi-shop.vercel.app/register" class="btn-primary text-xs py-2">Đăng kýa/a>
+                a/div>
+                    a/div>
+
+        a!-- Hotline Call -->
+        adiv class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+            aspan>Tư vấn khách hàng:a/span>
+            aa href="tel:19000129" class="font-bold text-rose-600">📞 1900 0129a/a>
+        a/div>
+    a/div>
+a/header>
+
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
+        <!-- Toast / Alerts -->
+        
+        
+        
+            <!-- resources/views/partials/hero.blade.php -->
+<section class="relative w-full rounded-3xl overflow-hidden shadow-lg bg-slate-900 my-4">
+    <div class="relative h-[340px] sm:h-[420px] lg:h-[480px] w-full overflow-hidden">
+        <!-- Video Background Layer -->
+        <video class="absolute inset-0 w-full h-full object-cover filter blur-md brightness-50 scale-105 pointer-events-none" autoplay muted loop playsinline preload="metadata">
+            <source src="https://hihi-shop.vercel.app/images/images_background/demo1.mp4" type="video/mp4">
+        </video>
+
+        <!-- Main Video Layer -->
+        <video class="absolute inset-0 w-full h-full object-cover sm:object-contain mix-blend-screen pointer-events-none opacity-90" autoplay muted loop playsinline preload="metadata">
+            <source src="https://hihi-shop.vercel.app/images/images_background/demo1.mp4" type="video/mp4">
+        </video>
+
+        <!-- Dark Gradient Overlay for optimal readability -->
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/40 to-slate-950/30 z-10"></div>
+
+        <!-- Content & CTA -->
+        <div class="relative z-20 h-full max-w-4xl mx-auto px-6 flex flex-col items-center justify-center text-center text-white space-y-4 sm:space-y-6">
+            <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase bg-rose-500/20 text-rose-300 border border-rose-500/30 backdrop-blur-md">
+                Bộ Sưu Tập Mới 2026
+            </span>
+
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-white drop-shadow-md">
+                Nâng Tầm Phong Cách <br class="hidden sm:inline">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-rose-300 to-amber-200">
+                    Đẳng Cấp Mỗi Ngày
+                </span>
+            </h1>
+
+            <p class="text-sm sm:text-base lg:text-lg text-slate-200 max-w-2xl font-medium drop-shadow">
+                Khám phá thế giới nước hoa, giày sneaker, mắt kính và đồng hồ chính hãng với trải nghiệm mua sắm tiện lợi nhất.
+            </p>
+
+            <div class="flex items-center gap-3 pt-2">
+                <a href="https://hihi-shop.vercel.app/products" class="btn-primary text-sm sm:text-base px-6 sm:px-8 py-3 rounded-2xl shadow-lg shadow-rose-600/30 hover:scale-105 transition-all">
+                    Khám phá ngay →
+                </a>
+                <a href="https://hihi-shop.vercel.app/category/nuoc-hoa" class="px-5 py-3 rounded-2xl text-sm sm:text-base font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all">
+                    Xem Deal Hot
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Featured Categories Section -->
+    <section class="mt-12 sm:mt-16">
+        <div class="flex items-end justify-between mb-6">
+            <div>
+                <span class="text-xs font-bold text-rose-600 uppercase tracking-widest">Bộ Sưu Tập</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">Danh mục nổi bật</h2>
+            </div>
+            <a href="https://hihi-shop.vercel.app/categories" class="text-sm font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 group transition">
+                <span>Xem tất cả</span>
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" id="category-grid">
+                            <a href="https://hihi-shop.vercel.app/category/nuoc-hoa" class="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-rose-200 transition-all duration-300 block">
+                    <div class="aspect-video sm:aspect-[4/3] bg-slate-100 flex items-center justify-center overflow-hidden relative">
+                        <img loading="lazy" src="https://hihi-shop.vercel.app/images/nuocHoa/Burberry London for women Edp/z6985538024915_fec532e7da2f5e46bbf61ead2e885f1b.jpg" alt="Nước hoa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                    </div>
+                    <div class="p-4 flex items-center justify-between bg-white">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-rose-600 transition-colors">Nước hoa</h3>
+                            <span class="text-xs text-slate-500 font-medium">Khám phá ngay</span>
+                        </div>
+                        <span class="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-rose-50 text-slate-400 group-hover:text-rose-600 flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
+                    </div>
+                </a>
+                            <a href="https://hihi-shop.vercel.app/category/giay" class="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-rose-200 transition-all duration-300 block">
+                    <div class="aspect-video sm:aspect-[4/3] bg-slate-100 flex items-center justify-center overflow-hidden relative">
+                        <img loading="lazy" src="https://hihi-shop.vercel.app/images/placeholder-giay.svg" alt="Giày" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                    </div>
+                    <div class="p-4 flex items-center justify-between bg-white">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-rose-600 transition-colors">Giày</h3>
+                            <span class="text-xs text-slate-500 font-medium">Khám phá ngay</span>
+                        </div>
+                        <span class="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-rose-50 text-slate-400 group-hover:text-rose-600 flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
+                    </div>
+                </a>
+                            <a href="https://hihi-shop.vercel.app/category/mat-kinh" class="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-rose-200 transition-all duration-300 block">
+                    <div class="aspect-video sm:aspect-[4/3] bg-slate-100 flex items-center justify-center overflow-hidden relative">
+                        <img loading="lazy" src="https://hihi-shop.vercel.app/images/matKinh/gant/z6985374841258_96ac95d7532f3dadc8e9dd96500ae0ca.jpg" alt="Mắt kính" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                    </div>
+                    <div class="p-4 flex items-center justify-between bg-white">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-rose-600 transition-colors">Mắt kính</h3>
+                            <span class="text-xs text-slate-500 font-medium">Khám phá ngay</span>
+                        </div>
+                        <span class="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-rose-50 text-slate-400 group-hover:text-rose-600 flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
+                    </div>
+                </a>
+                            <a href="https://hihi-shop.vercel.app/category/dong-ho" class="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-rose-200 transition-all duration-300 block">
+                    <div class="aspect-video sm:aspect-[4/3] bg-slate-100 flex items-center justify-center overflow-hidden relative">
+                        <img loading="lazy" src="https://hihi-shop.vercel.app/images/DongHo/Fleury D1496BYI  Women&#039;s/z6985341987281_fc4d6c76a2da9edfafad97a232cef0a4.jpg" alt="Đồng hồ" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                    </div>
+                    <div class="p-4 flex items-center justify-between bg-white">
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-sm sm:text-base group-hover:text-rose-600 transition-colors">Đồng hồ</h3>
+                            <span class="text-xs text-slate-500 font-medium">Khám phá ngay</span>
+                        </div>
+                        <span class="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-rose-50 text-slate-400 group-hover:text-rose-600 flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
+                    </div>
+                </a>
+                    </div>
+    </section>
+
+    <!-- Latest Products Section -->
+    <section class="mt-14 sm:mt-20">
+        <div class="flex items-end justify-between mb-6">
+            <div>
+                <span class="text-xs font-bold text-rose-600 uppercase tracking-widest">Sản Phẩm Đang Hot</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">Sản phẩm mới nhất</h2>
+            </div>
+            <a href="https://hihi-shop.vercel.app/products" class="text-sm font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 group transition">
+                <span>Xem tất cả</span>
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6" id="product-grid">
+                                            <article class="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-rose-200 transition-all duration-300 flex flex-col product-card">
+                    
+                    <!-- Media Container -->
+                    <a href="https://hihi-shop.vercel.app/product/dong-ho-automatic-sapphire-chong-nuoc-gy5qW" class="relative aspect-square bg-slate-50 flex items-center justify-center p-4 overflow-hidden block" aria-label="Đồng hồ Automatic Sapphire Chống Nước">
+                        <img loading="lazy" src="https://hihi-shop.vercel.app/images/DongHo/Fleury D1496BYI  Women&#039;s/z6985341987281_fc4d6c76a2da9edfafad97a232cef0a4.jpg" alt="Đồng hồ Automatic Sapphire Chống Nước" class="max-h-full max-w-full object-contain product-img"/>
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                            <span class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white bg-slate-900/90 backdrop-blur-sm rounded-lg shadow-sm">
+                                Mới
+                            </span>
+                                                    </div>
+                    </a>
+
+                    <!-- Card Body -->
+                    <div class="p-4 sm:p-5 flex flex-col flex-grow">
+                        <a href="https://hihi-shop.vercel.app/product/dong-ho-automatic-sapphire-chong-nuoc-gy5qW" class="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 hover:text-rose-600 transition-colors leading-snug mb-3">
+                            Đồng hồ Automatic Sapphire Chống Nước
+                        </a>
+
+                        <div class="mt-auto pt-2 flex flex-col gap-3">
+                            <div class="flex items-baseline gap-2 flex-wrap">
+                                <span class="text-base sm:text-lg font-black text-rose-600">
+                                    3.590.000đ
+                                </span>
+                                                            </div>
+
+                            <a href="https://hihi-shop.vercel.app/product/dong-ho-automatic-sapphire-chong-nuoc-gy5qW" class="btn-primary text-xs sm:text-sm py-2 sm:py-2.5 w-full rounded-xl">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                                            <article class="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-rose-200 transition-all duration-300 flex flex-col product-card">
+                    
+                    <!-- Media Container -->
+                    <a href="https://hihi-shop.vercel.app/product/kinh-mat-thoi-trang-wayfarer-uv400-2i4Nr" class="relative aspect-square bg-slate-50 flex items-center justify-center p-4 overflow-hidden block" aria-label="Kính mát Thời Trang Wayfarer UV400">
+                        <img loading="lazy" src="https://hihi-shop.vercel.app/images/matKinh/gant/z6985374841258_96ac95d7532f3dadc8e9dd96500ae0ca.jpg" alt="Kính mát Thời Trang Wayfarer UV400" class="max-h-full max-w-full object-contain product-img"/>
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                            <span class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white bg-slate-900/90 backdrop-blur-sm rounded-lg shadow-sm">
+                                Mới
+                            </span>
+                                                    </div>
+                    </a>
+
+                    <!-- Card Body -->
+                    <div class="p-4 sm:p-5 flex flex-col flex-grow">
+                        <a href="https://hihi-shop.vercel.app/product/kinh-mat-thoi-trang-wayfarer-uv400-2i4Nr" class="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 hover:text-rose-600 transition-colors leading-snug mb-3">
+                            Kính mát Thời Trang Wayfarer UV400
+                        </a>
+
+                        <div class="mt-auto pt-2 flex flex-col gap-3">
+                            <div class="flex items-baseline gap-2 flex-wrap">
+                                <span class="text-base sm:text-lg font-black text-rose-600">
+                                    790.000đ
+                                </span>
+                                                            </div>
+
+                            <a href="https://hihi-shop.vercel.app/product/kinh-mat-thoi-trang-wayfarer-uv400-2i4Nr" class="btn-primary text-xs sm:text-sm py-2 sm:py-2.5 w-full rounded-xl">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                                            <article class="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-rose-200 transition-all duration-300 flex flex-col product-card">
+                    
+                    <!-- Media Container -->
+                    <a href="https://hihi-shop.vercel.app/product/giay-sneaker-classic-canvas-white-Md0ia" class="relative aspect-square bg-slate-50 flex items-center justify-center p-4 overflow-hidden block" aria-label="Giày Sneaker Classic Canvas White">
+                        <img loading="lazy" src="https://hihi-shop.vercel.app/images/placeholder-giay.svg" alt="Giày Sneaker Classic Canvas White" class="max-h-full max-w-full object-contain product-img"/>
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                            <span class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white bg-slate-900/90 backdrop-blur-sm rounded-lg shadow-sm">
+                                Mới
+                            </span>
+                                                    </div>
+                    </a>
+
+                    <!-- Card Body -->
+                    <div class="p-4 sm:p-5 flex flex-col flex-grow">
+                        <a href="https://hihi-shop.vercel.app/product/giay-sneaker-classic-canvas-white-Md0ia" class="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 hover:text-rose-600 transition-colors leading-snug mb-3">
+                            Giày Sneaker Classic Canvas White
+                        </a>
+
+                        <div class="mt-auto pt-2 flex flex-col gap-3">
+                            <div class="flex items-baseline gap-2 flex-wrap">
+                                <span class="text-base sm:text-lg font-black text-rose-600">
+                                    990.000đ
+                                </span>
+                                                            </div>
+
+                            <a href="https://hihi-shop.vercel.app/product/giay-sneaker-classic-canvas-white-Md0ia" class="btn-primary text-xs sm:text-sm py-2 sm:py-2.5 w-full rounded-xl">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                                            <article class="group relative bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-card-hover hover:border-rose-200 transition-all duration-300 flex flex-col product-card">
+                    
+                    <!-- Media Container -->
+                    <a href="https://hihi-shop.vercel.app/product/nuoc-hoa-citrus-fresh-eau-de-parfum-HCKtW" class="relative aspect-square bg-slate-50 flex items-center justify-center p-4 overflow-hidden block" aria-label="Nước hoa Citrus Fresh Eau De Parfum">
+                        <img loading="lazy" src="https://hihi-shop.vercel.app/images/nuocHoa/Burberry London for women Edp/z6985538024915_fec532e7da2f5e46bbf61ead2e885f1b.jpg" alt="Nước hoa Citrus Fresh Eau De Parfum" class="max-h-full max-w-full object-contain product-img"/>
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+                            <span class="px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white bg-slate-900/90 backdrop-blur-sm rounded-lg shadow-sm">
+                                Mới
+                            </span>
+                                                    </div>
+                    </a>
+
+                    <!-- Card Body -->
+                    <div class="p-4 sm:p-5 flex flex-col flex-grow">
+                        <a href="https://hihi-shop.vercel.app/product/nuoc-hoa-citrus-fresh-eau-de-parfum-HCKtW" class="font-bold text-slate-900 text-sm sm:text-base line-clamp-2 hover:text-rose-600 transition-colors leading-snug mb-3">
+                            Nước hoa Citrus Fresh Eau De Parfum
+                        </a>
+
+                        <div class="mt-auto pt-2 flex flex-col gap-3">
+                            <div class="flex items-baseline gap-2 flex-wrap">
+                                <span class="text-base sm:text-lg font-black text-rose-600">
+                                    1.590.000đ
+                                </span>
+                                                            </div>
+
+                            <a href="https://hihi-shop.vercel.app/product/nuoc-hoa-citrus-fresh-eau-de-parfum-HCKtW" class="btn-primary text-xs sm:text-sm py-2 sm:py-2.5 w-full rounded-xl">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </article>
+                    </div>
+    </section>
+    </main>
+
+    s!-- resources/views/partials/footer.blade.php -->
+sfooter class="bg-slate-900 text-slate-400 mt-20 border-t border-slate-800">
+    s!-- Value Propositions / Trust Badges -->
+    sdiv class="border-b border-slate-800/80 bg-slate-900/60">
+        sdiv class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            sdiv class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+                sdiv class="flex items-center gap-3.5">
+                    sdiv class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center shrink-0">
+                        ssvg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">spath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>s/svg>
+                    s/div>
+                    sdiv>
+                        sh4 class="text-white text-sm font-bold">100% Chính Hãngs/h4>
+                        sp class="text-xs text-slate-400 mt-0.5">Cam kết nguồn gốc xuất xứs/p>
+                    s/div>
+                s/div>
+
+                sdiv class="flex items-center gap-3.5">
+                    sdiv class="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center shrink-0">
+                        ssvg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">spath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>s/svg>
+                    s/div>
+                    sdiv>
+                        sh4 class="text-white text-sm font-bold">Giao Hàng Miễn Phís/h4>
+                        sp class="text-xs text-slate-400 mt-0.5">Đơn COD toàn quốcs/p>
+                    s/div>
+                s/div>
+
+                sdiv class="flex items-center gap-3.5">
+                    sdiv class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                        ssvg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">spath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>s/svg>
+                    s/div>
+                    sdiv>
+                        sh4 class="text-white text-sm font-bold">Đổi Trả 7 Ngàys/h4>
+                        sp class="text-xs text-slate-400 mt-0.5">Nhanh chóng & linh hoạts/p>
+                    s/div>
+                s/div>
+
+                sdiv class="flex items-center gap-3.5">
+                    sdiv class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        ssvg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">spath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>s/svg>
+                    s/div>
+                    sdiv>
+                        sh4 class="text-white text-sm font-bold">Hỗ Trợ 24/7s/h4>
+                        sp class="text-xs text-slate-400 mt-0.5">Tư vấn tận tâm, chu đáos/p>
+                    s/div>
+                s/div>
+            s/div>
+        s/div>
+    s/div>
+
+    s!-- Main Footer Links -->
+    sdiv class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        sdiv class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            
+            s!-- Col 1: About HIHI Shop -->
+            sdiv>
+                sa href="https://hihi-shop.vercel.app" class="flex items-center gap-2 text-2xl font-black tracking-tight text-white mb-4">
+                    sspan class="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-600 to-rose-400 text-white flex items-center justify-center font-black text-sm">
+                        H
+                    s/span>
+                    sspan>HIHIsspan class="text-rose-500">Shops/span>s/span>
+                s/a>
+                sp class="text-sm text-slate-400 leading-relaxed mb-4">
+                    Thế giới phụ kiện & thời trang cao cấp. Trải nghiệm mua sắm đẳng cấp với các bộ sưu tập nước hoa, giày, mắt kính và đồng hồ độc quyền.
+                s/p>
+                sdiv class="flex items-center gap-3">
+                    sa href="#" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition" aria-label="Facebook">
+                        ssvg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">spath d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>s/svg>
+                    s/a>
+                    sa href="#" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition" aria-label="Instagram">
+                        ssvg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">spath d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>s/svg>
+                    s/a>
+                    sa href="#" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition" aria-label="Youtube">
+                        ssvg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">spath d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>s/svg>
+                    s/a>
+                s/div>
+            s/div>
+
+            s!-- Col 2: Categories -->
+            sdiv>
+                sh4 class="text-white text-sm font-bold uppercase tracking-wider mb-4">Danh Mục Sản Phẩms/h4>
+                sul class="space-y-2.5 text-sm">
+                    sli>sa href="https://hihi-shop.vercel.app/category/nuoc-hoa" class="hover:text-white transition">Nước hoa cao cấps/a>s/li>
+                    sli>sa href="https://hihi-shop.vercel.app/category/giay" class="hover:text-white transition">Giày sneaker & công sởs/a>s/li>
+                    sli>sa href="https://hihi-shop.vercel.app/category/mat-kinh" class="hover:text-white transition">Mắt kính thời trangs/a>s/li>
+                    sli>sa href="https://hihi-shop.vercel.app/category/dong-ho" class="hover:text-white transition">Đồng hồ chính hãngs/a>s/li>
+                    sli>sa href="https://hihi-shop.vercel.app/products" class="hover:text-white transition">Tất cả sản phẩms/a>s/li>
+                s/ul>
+            s/div>
+
+            s!-- Col 3: Customer Policy -->
+            sdiv>
+                sh4 class="text-white text-sm font-bold uppercase tracking-wider mb-4">Hỗ Trợ Khách Hàngs/h4>
+                sul class="space-y-2.5 text-sm">
+                    sli>sa href="#" class="hover:text-white transition">Chính sách vận chuyển & CODs/a>s/li>
+                    sli>sa href="#" class="hover:text-white transition">Chính sách đổi trả trong 7 ngàys/a>s/li>
+                    sli>sa href="#" class="hover:text-white transition">Hướng dẫn chọn size chuẩns/a>s/li>
+                    sli>sa href="#" class="hover:text-white transition">Quy định bảo hành sản phẩms/a>s/li>
+                    sli>sa href="#" class="hover:text-white transition">Bảo mật thông tin khách hàngs/a>s/li>
+                s/ul>
+            s/div>
+
+            s!-- Col 4: Contact -->
+            sdiv>
+                sh4 class="text-white text-sm font-bold uppercase tracking-wider mb-4">Thông Tin Liên Hệs/h4>
+                sdiv class="space-y-3 text-sm">
+                    sp class="flex items-start gap-2.5">
+                        ssvg class="w-4 h-4 text-rose-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">spath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>spath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>s/svg>
+                        sspan>123 Đường Mỹ Phẩm, Quận 1, TP. Hồ Chí Minhs/span>
+                    s/p>
+                    sp class="flex items-center gap-2.5">
+                        ssvg class="w-4 h-4 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">spath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>s/svg>
+                        sspan>Hotline: sa href="tel:19000129" class="text-white font-bold hover:text-rose-400 transition">1900 0129s/a>s/span>
+                    s/p>
+                    sp class="flex items-center gap-2.5">
+                        ssvg class="w-4 h-4 text-rose-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">spath stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>s/svg>
+                        sspan>Email: support@hihishop.coms/span>
+                    s/p>
+                s/div>
+            s/div>
+
+        s/div>
+    s/div>
+
+    s!-- Copyright Bar -->
+    sdiv class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        sdiv class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            sp>&copy; 2026 HIHI-SHOP. Nền tảng thương mại điện tử phụ kiện & thời trang.s/p>
+            sdiv class="flex items-center gap-4 text-slate-400">
+                sspan class="text-slate-600">Thanh toán an toàn:s/span>
+                sspan class="px-2 py-1 rounded bg-slate-800 text-[11px] font-bold text-slate-300">Tiền mặt CODs/span>
+                sspan class="px-2 py-1 rounded bg-slate-800 text-[11px] font-bold text-slate-300">Chính hãngs/span>
+            s/div>
+        s/div>
+    s/div>
+s/footer>
+
+    <!-- Real-time AI Assistant Chatbot -->
+    <!-- resources/views/components/ai-chatbot.blade.php -->
+<div id="hihi-ai-chatbot" class="fixed bottom-5 right-5 z-50 font-['Montserrat',sans-serif]">
+
+    <!-- Floating Toggle Button -->
+    <button type="button" 
+            id="chat-toggle-btn"
+            onclick="toggleHihiChat()"
+            class="relative flex items-center gap-2.5 px-4 py-3.5 rounded-full bg-gradient-to-r from-rose-600 to-rose-500 text-white shadow-[0_10px_25px_-5px_rgba(225,29,72,0.5)] hover:shadow-[0_15px_30px_-5px_rgba(225,29,72,0.65)] hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer border border-rose-400/30">
+        <!-- Pulse ring -->
+        <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-slate-900"></span>
+        </span>
+
+        <!-- AI Dynamic Animated Icon (Replaced emoji) -->
+        <span class="w-7 h-7 rounded-full bg-white/20 backdrop-blur flex items-center justify-center text-rose-100 shadow-inner group-hover:scale-110 transition-transform">
+            <svg class="w-4 h-4 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+        </span>
+        <span class="text-xs sm:text-sm font-bold tracking-wide leading-none">
+            Chat với AI
+        </span>
+    </button>
+
+    <!-- Chat Window Popup (Hidden by default) -->
+    <div id="chat-window" 
+         class="hidden fixed bottom-5 right-5 w-[92vw] sm:w-[410px] h-[560px] max-h-[85vh] rounded-3xl bg-slate-900/95 backdrop-blur-2xl border border-slate-800 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] flex-col overflow-hidden transition-all duration-300 z-50">
+        
+        <!-- Chat Header -->
+        <div class="px-5 py-4 bg-gradient-to-r from-slate-900 via-rose-950/60 to-slate-900 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-600 to-rose-400 text-white flex items-center justify-center text-lg font-black shadow-md shadow-rose-600/30">
+                        H
+                    </div>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-900"></span>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-white flex items-center gap-1.5 leading-snug">
+                        <span>HIHI AI Assistant</span>
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 leading-none">AI RAG</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400 flex items-center gap-1.5 leading-normal mt-0.5">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span>Dữ liệu CSDL thời gian thực</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Minimize / Close Buttons -->
+            <button type="button" 
+                    onclick="toggleHihiChat()" 
+                    class="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition border border-slate-700/50 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <!-- Quick Prompts Chips (Replaced emojis with crisp vector SVG icons) -->
+        <div class="px-4 py-2.5 bg-slate-950/40 border-b border-slate-800/60 flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px]">
+            <button type="button" onclick="sendQuickPrompt('Làm sao để đăng ký nhanh bằng Google hoặc FB?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-800/90 text-slate-300 hover:text-rose-300 hover:bg-slate-800 border border-slate-700/80 transition flex items-center gap-1.5 leading-none cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                <span>Đăng ký Google/FB</span>
+            </button>
+            <button type="button" onclick="sendQuickPrompt('Tư vấn nước hoa bán chạy nhất')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-800/90 text-slate-300 hover:text-rose-300 hover:bg-slate-800 border border-slate-700/80 transition flex items-center gap-1.5 leading-none cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                <span>Nước hoa hot</span>
+            </button>
+            <button type="button" onclick="sendQuickPrompt('Chính sách giao hàng và bảo hành như thế nào?')" class="whitespace-nowrap px-3 py-1.5 rounded-full bg-slate-800/90 text-slate-300 hover:text-rose-300 hover:bg-slate-800 border border-slate-700/80 transition flex items-center gap-1.5 leading-none cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <span>Chính sách bảo hành</span>
+            </button>
+        </div>
+
+        <!-- Message History Body -->
+        <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs">
+            <!-- Welcome message (Replaced emoji with Vector Icon) -->
+            <div class="flex items-start gap-2.5">
+                <div class="w-7 h-7 rounded-xl bg-rose-600/30 border border-rose-500/30 text-rose-300 flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div class="max-w-[85%] p-3.5 rounded-2xl rounded-tl-sm bg-slate-800/90 border border-slate-700/80 text-slate-200 leading-5 space-y-1.5 shadow-sm">
+                    <p class="font-semibold text-rose-300 text-[11px] uppercase tracking-wide leading-none">Trợ lý HIHI Shop</p>
+                    <p class="leading-5">Chào bạn! Mình là <strong>AI Assistant</strong> hỗ trợ 24/7. Bạn có thể hỏi mình về tư vấn chọn sản phẩm, cách đăng ký tài khoản hoặc chính sách của shop nhé!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator (Hidden by default) -->
+        <div id="chat-typing" class="hidden px-5 py-2 flex items-center gap-2 text-[11px] text-slate-400 bg-slate-900/80 border-t border-slate-800/60 leading-none">
+            <span class="inline-flex gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-bounce"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-400 animate-bounce" style="animation-delay: 0.2s"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-rose-300 animate-bounce" style="animation-delay: 0.4s"></span>
+            </span>
+            <span>AI đang tra cứu dữ liệu...</span>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <form id="chat-input-form" onsubmit="handleChatSubmit(event)" class="p-3 bg-slate-950/90 border-t border-slate-800 flex items-center gap-2">
+            <input type="text" 
+                   id="chat-user-input" 
+                   placeholder="Nhập câu hỏi hoặc tên sản phẩm..." 
+                   autocomplete="off"
+                   class="flex-1 px-4 py-2.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-rose-500/50 focus:ring-2 focus:ring-rose-500/20 leading-normal transition">
+            
+            <button type="submit" 
+                    id="chat-send-btn"
+                    class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-600 to-rose-500 text-white flex items-center justify-center shrink-0 hover:brightness-110 active:scale-95 transition shadow-md shadow-rose-600/30 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+        </form>
+
+    </div>
+</div>
+
+<style>
+@keyframes spinSlow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+.animate-spin-slow {
+    animation: spinSlow 10s linear infinite;
+}
+</style>
+
+<script>
+function toggleHihiChat() {
+    const chatWin = document.getElementById("chat-window");
+    const toggleBtn = document.getElementById("chat-toggle-btn");
+    if (!chatWin) return;
+
+    if (chatWin.classList.contains("hidden")) {
+        chatWin.classList.remove("hidden");
+        chatWin.classList.add("flex");
+        toggleBtn.classList.add("hidden");
+        document.getElementById("chat-user-input")?.focus();
+        loadChatHistory();
+    } else {
+        chatWin.classList.add("hidden");
+        chatWin.classList.remove("flex");
+        toggleBtn.classList.remove("hidden");
+    }
+}
+
+function sendQuickPrompt(promptText) {
+    const input = document.getElementById("chat-user-input");
+    if (!input) return;
+    input.value = promptText;
+    handleChatSubmit(new Event('submit'));
+}
+
+async function handleChatSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const input = document.getElementById("chat-user-input");
+    const container = document.getElementById("chat-messages-container");
+    const typing = document.getElementById("chat-typing");
+    const sendBtn = document.getElementById("chat-send-btn");
+
+    if (!input) return;
+    const userText = input.value.trim();
+    if (!userText) return;
+
+    // Append User Message to UI
+    appendUserMessage(userText);
+    input.value = "";
+    input.disabled = true;
+    sendBtn.disabled = true;
+    typing.classList.remove("hidden");
+    container.scrollTop = container.scrollHeight;
+
+    try {
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const res = await fetch("https://hihi-shop.vercel.app/chat/message", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": token || ""
+            },
+            body: JSON.stringify({ message: userText })
+        });
+
+        const data = await res.json();
+        typing.classList.add("hidden");
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.focus();
+
+        if (data && data.reply) {
+            appendBotMessage(data.reply, data.products || [], data.message_id || null);
+        } else {
+            appendBotMessage("Hệ thống AI đang bận xử lý, vui lòng thử lại sau giây lát.");
+        }
+    } catch (err) {
+        console.error("Chat error:", err);
+        typing.classList.add("hidden");
+        input.disabled = false;
+        sendBtn.disabled = false;
+        appendBotMessage("Không thể kết nối đến máy chủ AI. Vui lòng kiểm tra lại kết nối mạng.");
+    }
+
+    container.scrollTop = container.scrollHeight;
+}
+
+function appendUserMessage(text) {
+    const container = document.getElementById("chat-messages-container");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "flex justify-end";
+    msgDiv.innerHTML = `
+        <div class="max-w-[80%] p-3.5 rounded-2xl rounded-tr-sm bg-gradient-to-r from-rose-600 to-rose-700 text-white leading-5 shadow-md shadow-rose-950/30">
+            ${escapeHtml(text)}
+        </div>
+    `;
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+function appendBotMessage(text, products = [], messageId = null, feedback = 'none') {
+    const container = document.getElementById("chat-messages-container");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "flex items-start gap-2.5";
+
+    let formattedText = formatMarkdownText(text);
+
+    let productsHtml = "";
+    if (products && products.length > 0) {
+        productsHtml = `
+            <div class="mt-2.5 pt-2.5 border-t border-slate-700/80 space-y-2">
+                <p class="text-[11px] font-bold text-rose-300 leading-none">Sản phẩm đề xuất thời gian thực:</p>
+                <div class="space-y-1.5">
+                    ${products.map(p => `
+                        <a href="${p.url}" class="flex items-center gap-2.5 p-2 rounded-xl bg-slate-900/80 hover:bg-slate-950 border border-slate-700/60 hover:border-rose-500/50 transition group block">
+                            <img src="${p.image}" alt="${escapeHtml(p.name)}" class="w-10 h-10 object-cover rounded-lg shrink-0 bg-slate-800">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-[11px] font-semibold text-slate-200 group-hover:text-rose-300 truncate leading-snug">${escapeHtml(p.name)}</p>
+                                <p class="text-[10px] font-bold text-rose-400 leading-none mt-0.5">${p.price}</p>
+                            </div>
+                            <svg class="w-3.5 h-3.5 text-slate-500 group-hover:text-rose-400 group-hover:translate-x-0.5 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    const feedbackHtml = messageId ? `
+        <div class="mt-2.5 pt-2.5 border-t border-slate-700/80 flex items-center gap-2" data-feedback-box>
+            <span class="text-[10px] text-slate-500">Hữu ích?</span>
+            <button type="button" data-feedback="thumbs_up" onclick="sendChatFeedback(this, ${messageId}, 'thumbs_up')" aria-label="Hữu ích"
+                    class="w-7 h-7 rounded-lg bg-slate-900/80 border border-slate-700/60 flex items-center justify-center hover:border-emerald-500/60 transition ${feedback === 'thumbs_up' ? 'text-emerald-400' : 'text-slate-400'}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+            </button>
+            <button type="button" data-feedback="thumbs_down" onclick="sendChatFeedback(this, ${messageId}, 'thumbs_down')" aria-label="Chưa hữu ích"
+                    class="w-7 h-7 rounded-lg bg-slate-900/80 border border-slate-700/60 flex items-center justify-center hover:border-rose-500/60 transition ${feedback === 'thumbs_down' ? 'text-rose-400' : 'text-slate-400'}">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3zM17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>
+            </button>
+            <span data-thanks class="hidden text-[10px] text-emerald-400">Đã ghi nhận, cảm ơn bạn!</span>
+        </div>
+    ` : '';
+
+    msgDiv.innerHTML = `
+        <div class="w-7 h-7 rounded-xl bg-rose-600/30 border border-rose-500/30 text-rose-300 flex items-center justify-center shrink-0">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+        </div>
+        <div class="max-w-[85%] p-3.5 rounded-2xl rounded-tl-sm bg-slate-800/90 border border-slate-700/80 text-slate-200 leading-5 shadow-sm">
+            <p class="font-semibold text-rose-300 text-[10px] uppercase tracking-wide leading-none">HIHI AI</p>
+            <div class="space-y-1.5 leading-5 mt-1">${formattedText}</div>
+            ${productsHtml}
+            ${feedbackHtml}
+        </div>
+    `;
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendChatFeedback(btn, messageId, value) {
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+    try {
+        const res = await fetch("https://hihi-shop.vercel.app/chat/feedback", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-TOKEN": token || ""
+            },
+            body: JSON.stringify({ message_id: messageId, feedback: value })
+        });
+
+        if (!res.ok) throw new Error("HTTP " + res.status);
+
+        const box = btn.closest('[data-feedback-box]');
+        if (box) {
+            box.querySelectorAll('button[data-feedback]').forEach(b => {
+                b.classList.remove('text-emerald-400', 'text-rose-400');
+                b.classList.add('text-slate-400');
+            });
+            btn.classList.remove('text-slate-400');
+            btn.classList.add(value === 'thumbs_up' ? 'text-emerald-400' : 'text-rose-400');
+            box.querySelector('[data-thanks]')?.classList.remove('hidden');
+        }
+    } catch (e) {
+        console.warn("Không gửi được phản hồi", e);
+    }
+}
+
+let historyLoaded = false;
+async function loadChatHistory() {
+    if (historyLoaded) return;
+    try {
+        const res = await fetch("https://hihi-shop.vercel.app/chat/history");
+        const data = await res.json();
+        if (data && data.messages && data.messages.length > 0) {
+            data.messages.forEach(m => {
+                if (m.sender === 'user') {
+                    appendUserMessage(m.content);
+                } else if (m.sender === 'bot') {
+                    appendBotMessage(m.content, [], m.id || null, m.feedback || 'none');
+                }
+            });
+            historyLoaded = true;
+        }
+    } catch(e) {
+        console.warn("Could not load chat history", e);
+    }
+}
+
+function formatMarkdownText(txt) {
+    if (!txt) return "";
+    // Escape HTML trước để dữ liệu từ CSDL (tên sản phẩm...) không chèn được thẻ lạ
+    return escapeHtml(String(txt))
+        .replace(/\n\n/g, '<br><br>')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/•/g, '&bull;');
+}
+
+function escapeHtml(text) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+</script>
+
+    </body>
+</html>
