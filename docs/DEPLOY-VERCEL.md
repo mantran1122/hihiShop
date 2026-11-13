@@ -141,6 +141,34 @@ Lưu ý:
 
 **Cách A — Git integration (khuyến nghị):** Vercel → Add New Project → Import repo vừa push → nhập Environment Variables → Deploy. Mỗi lần push là một deployment mới, có preview URL.
 
+#### Cấu hình form "New Project" (rất quan trọng)
+
+| Trường | Giá trị đúng |
+|---|---|
+| Project Name | `hihi-shop` (khớp URI OAuth đã đăng ký) hoặc tên domain bạn chọn |
+| **Framework Preset** | **Other** — **KHÔNG** chọn Vite / Next.js |
+| Root Directory | `./` |
+| Build Command | để trống |
+| Output Directory | để trống |
+| Install Command | để trống (dùng mặc định) |
+| Environment Variables | có thể nhập sau khi tạo project |
+
+> Nếu chọn preset **Vite**, Vercel sẽ đi tìm thư mục `dist` và deploy như site tĩnh → Laravel không chạy (404 hoặc mất CSS).
+
+### 5.3. Gắn custom domain
+
+Vercel Hobby vẫn gắn được domain riêng **miễn phí**:
+
+1. Project → **Settings → Domains → Add**, nhập domain (ví dụ `hihishop.vn`)
+2. Trỏ DNS theo hướng dẫn của Vercel:
+   - Domain gốc (apex): bản ghi `A` → `76.76.21.21`
+   - `www`: bản ghi `CNAME` → `cname.vercel-dns.com`
+3. Cập nhật `APP_URL` = domain mới trong Environment Variables → **Redeploy**
+4. Thêm redirect URI mới vào Google Console nếu domain chưa có trong danh sách
+   (đã có sẵn: `hihi-shop.vercel.app`, `hihishop.vn`, `127.0.0.1:8000`)
+
+> ⚠️ Gói **Hobby** của Vercel chỉ dùng cho mục đích **phi thương mại**. Bán hàng thật cần nâng **Pro** (~20 USD/tháng) hoặc chuyển sang Railway/Render/VPS.
+
 **Cách B — CLI:**
 
 ```powershell
