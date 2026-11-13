@@ -74,14 +74,16 @@ foreach (['views', 'sessions', 'cache', 'logs'] as $folder) {
 $defaults = [
     'VIEW_COMPILED_PATH' => $tmpBase.'/views',
     'SESSION_FILES_PATH' => $tmpBase.'/sessions',
-    // Laravel đọc/ghi danh sách package đã discover ở đây. Trên Vercel thư mục
-    // bootstrap/cache là read-only và file packages.php không được đóng gói,
-    // nên trỏ sang /tmp để Laravel tự build lại (nếu không sẽ thiếu service provider).
-    'APP_PACKAGES_CACHE' => $tmpBase.'/packages.php',
     // Ghi log ra stderr để Vercel hiển thị trong Functions → Logs
     'LOG_CHANNEL' => 'stderr',
     'LOG_STACK' => 'stderr',
 ];
+
+// Trên Linux/serverless (/tmp là absolute) mới trỏ cache package sang /tmp.
+// Windows local dùng đường dẫn tuyệt đối kiểu C:\ nên Laravel sẽ ghép sai -> bỏ qua.
+if (str_starts_with($tmpBase, '/')) {
+    $defaults['APP_PACKAGES_CACHE'] = $tmpBase.'/packages.php';
+}
 
 foreach ($defaults as $key => $value) {
     $alreadySet = getenv($key) !== false
@@ -131,6 +133,49 @@ if (($_GET['__probe'] ?? null) === '1') {
 // ---------------------------------------------------------------------------
 // 4. Boot Laravel (bắt lỗi để chẩn đoán khi cần)
 // ---------------------------------------------------------------------------
+// Chẩn đoán sâu: boot kernel thủ công để lấy lỗi gốc (không bị error handler che)
+if (($_GET['__probe'] ?? null) === 'boot') {
+    header('Content-Type: application/json; charset=UTF-8');
+
+    try {
+        require dirname(__DIR__).'/vendor/autoload.php';
+        $app = require dirname(__DIR__).'/bootstrap/app.php';
+        $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+        // Gọi thẳng từng bootstrapper để exception gốc không bị Kernel bắt và render lại
+        $app->bootstrapWith([
+            Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
+            Illuminate\Foundation\Bootstrap\LoadConfiguration::class,
+            Illuminate\Foundation\Bootstrap\HandleExceptions::class,
+            Illuminate\Foundation\Bootstrap\RegisterFacades::class,
+            Illuminate\Foundation\Bootstrap\RegisterProviders::class,
+            Illuminate\Foundation\Bootstrap\BootProviders::class,
+        ]);
+
+        echo json_encode([
+            'boot' => 'ok',
+            'providers' => count($app->getLoadedProviders()),
+            'has_view' => $app->bound('view'),
+            'has_db' => $app->bound('db'),
+        ], JSON_PRETTY_PRINT);
+    } catch (\Throwable $e) {
+        http_response_code(500);
+        echo json_encode([
+            'boot' => 'fail',
+            'error' => get_class($e),
+            'message' => $e->getMessage(),
+            'file' => basename($e->getFile()),
+            'line' => $e->getLine(),
+            'trace' => array_map(
+                fn ($frame) => basename($frame['file'] ?? '?').':'.($frame['line'] ?? '?').' '.($frame['class'] ?? '').($frame['type'] ?? '').($frame['function'] ?? ''),
+                array_slice($e->getTrace(), 0, 10)
+            ),
+        ], JSON_PRETTY_PRINT);
+    }
+
+    return;
+}
+
 // Bắt lỗi fatal (E_ERROR...) để chẩn đoán khi cần
 register_shutdown_function(function () {
     if (!isset($_GET['__probe'])) {
