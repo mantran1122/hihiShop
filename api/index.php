@@ -92,6 +92,50 @@ foreach ($defaults as $key => $value) {
 }
 
 // ---------------------------------------------------------------------------
-// 3. Boot Laravel
+// 3. Chẩn đoán tạm (truy cập /?__probe=1) — chỉ trả boolean/không lộ giá trị
 // ---------------------------------------------------------------------------
-require $publicDir.'/index.php';
+if (isset($_GET['__probe'])) {
+    header('Content-Type: application/json; charset=UTF-8');
+
+    echo json_encode([
+        'php' => PHP_VERSION,
+        'app_env' => getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? null),
+        'has_app_key' => !empty(getenv('APP_KEY') ?: ($_ENV['APP_KEY'] ?? '')),
+        'has_db_host' => !empty(getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? '')),
+        'db_ssl' => getenv('DB_SSL') ?: ($_ENV['DB_SSL'] ?? null),
+        'vendor_autoload' => is_file(dirname(__DIR__).'/vendor/autoload.php'),
+        'bootstrap_packages' => is_file(dirname(__DIR__).'/bootstrap/cache/packages.php'),
+        'storage_writable' => is_writable(dirname(__DIR__).'/storage'),
+        'tmp_writable' => is_writable(sys_get_temp_dir()),
+        'extensions' => [
+            'pdo_mysql' => extension_loaded('pdo_mysql'),
+            'mbstring' => extension_loaded('mbstring'),
+            'openssl' => extension_loaded('openssl'),
+            'fileinfo' => extension_loaded('fileinfo'),
+            'intl' => extension_loaded('intl'),
+        ],
+    ], JSON_PRETTY_PRINT);
+
+    return;
+}
+
+// ---------------------------------------------------------------------------
+// 4. Boot Laravel (bắt lỗi để chẩn đoán khi cần)
+// ---------------------------------------------------------------------------
+try {
+    require $publicDir.'/index.php';
+} catch (\Throwable $e) {
+    if (isset($_GET['__probe'])) {
+        header('Content-Type: application/json; charset=UTF-8');
+        http_response_code(500);
+        echo json_encode([
+            'error' => get_class($e),
+            'message' => $e->getMessage(),
+            'file' => basename($e->getFile()),
+            'line' => $e->getLine(),
+        ]);
+        return;
+    }
+
+    throw $e;
+}
