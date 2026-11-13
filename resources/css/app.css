@@ -83,3 +83,97 @@
         scrollbar-width: none;
     }
 }
+
+/* ============================================================
+   NProgress - thanh tiến trình khi chuyển trang (thư viện)
+   ============================================================ */
+#nprogress {
+    pointer-events: none;
+}
+
+#nprogress .bar {
+    background: #e11d48;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+}
+
+#nprogress .peg {
+    display: block;
+    position: absolute;
+    right: 0;
+    width: 100px;
+    height: 100%;
+    box-shadow: 0 0 10px #e11d48, 0 0 5px #e11d48;
+    opacity: 1;
+    transform: rotate(3deg) translate(0, -4px);
+}
+
+/* ============================================================
+   Micro-interaction cho nút (nhấn/hover có phản hồi)
+   ============================================================ */
+@layer components {
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        @apply transition-all duration-200 ease-out will-change-transform;
+    }
+
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-danger:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-primary:active,
+    .btn-secondary:active,
+    .btn-danger:active {
+        transform: translateY(0) scale(0.97);
+    }
+}
+
+/* ============================================================
+   Page transition - View Transitions API (trình duyệt tự chạy,
+   không cần JS; Chrome 126+, Safari 18.2+; trình duyệt cũ bỏ qua)
+   ============================================================ */
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: page-fade-out 120ms ease-out both;
+}
+
+::view-transition-new(root) {
+    animation: page-fade-in 180ms ease-in both;
+}
+
+@keyframes page-fade-out {
+    to {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+}
+
+@keyframes page-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        transition: none;
+    }
+}

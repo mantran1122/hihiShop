@@ -178,6 +178,7 @@ Vercel Hobby vẫn gắn được domain riêng **miễn phí**:
 | Blade cần biên dịch view | `VIEW_COMPILED_PATH=/tmp/hihi-shop/views` |
 | Log không xem được | `LOG_CHANNEL=stderr` (hiện trong Vercel → Functions → Logs) |
 | CSS/JS/ảnh | Phục vụ tĩnh từ `public/` (output directory), không qua PHP |
+| Trang chậm 9–11 giây | Function chạy ở Mỹ (`iad1`) trong khi TiDB ở Singapore → `vercel.json` đặt `regions: ["sin1"]`, TTFB giảm còn ~0,6–0,8s |
 
 > Nếu gặp lỗi `bootstrap/cache directory must be present and writable` hoặc `Target class [view] does not exist`
 > thì kiểm tra các biến `/tmp` ở trên trong `api/index.php` — đây là các lỗi đã gặp và đã sửa.
