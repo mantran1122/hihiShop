@@ -14,6 +14,7 @@ use App\Models\SanPham;
 use App\Models\BienTheSanPham;
 use App\Models\User;
 use App\Models\DanhMuc;
+use App\Models\Setting;
 use App\Models\ThuongHieu;
 use Spatie\Permission\Models\Role;
 
@@ -662,5 +663,66 @@ class AdminController extends Controller
         $status = $user->is_active ? 'Đã mở khoá' : 'Đã khoá';
 
         return back()->with('success', "{$status} tài khoản {$user->email}");
+    }
+
+    // 10. Cài đặt thanh toán VietQR
+    public function paymentSettings()
+    {
+        $banks = [
+            'MB' => 'MB Bank (Quân Đội)',
+            'VCB' => 'Vietcombank',
+            'TCB' => 'Techcombank',
+            'ACB' => 'ACB',
+            'VPB' => 'VPBank',
+            'BIDV' => 'BIDV',
+            'ICB' => 'VietinBank',
+            'TPB' => 'TPBank',
+            'STB' => 'Sacombank',
+            'VIB' => 'VIB',
+            'SHB' => 'SHB',
+            'MSB' => 'MSB',
+            'HDB' => 'HDBank',
+            'OCB' => 'OCB',
+            'EIB' => 'Eximbank',
+            'LPB' => 'LPBank',
+            'NAB' => 'Nam A Bank',
+            'SCB' => 'SCB',
+            'PGB' => 'PGBank',
+            'SEAB' => 'SeABank',
+        ];
+
+        $settings = [
+            'bank_id' => Setting::get('vietqr.bank_id', config('payment.vietqr.bank_id', 'MB')),
+            'bank_name' => Setting::get('vietqr.bank_name', config('payment.vietqr.bank_name')),
+            'account_no' => Setting::get('vietqr.account_no', config('payment.vietqr.account_no')),
+            'account_name' => Setting::get('vietqr.account_name', config('payment.vietqr.account_name')),
+            'template' => Setting::get('vietqr.template', config('payment.vietqr.template', 'compact2')),
+        ];
+
+        return view('admin.settings.payment', compact('settings', 'banks'));
+    }
+
+    // 11. Lưu cài đặt thanh toán
+    public function updatePaymentSettings(Request $request)
+    {
+        $data = $request->validate([
+            'bank_id' => ['required', 'string', 'max:20'],
+            'bank_name' => ['required', 'string', 'max:120'],
+            'account_no' => ['required', 'string', 'max:30', 'regex:/^[0-9A-Za-z._-]+$/'],
+            'account_name' => ['required', 'string', 'max:120'],
+            'template' => ['required', 'in:compact,compact2,qr_only,print'],
+        ], [
+            'bank_id.required' => 'Vui lòng chọn ngân hàng.',
+            'account_no.required' => 'Vui lòng nhập số tài khoản nhận tiền.',
+            'account_no.regex' => 'Số tài khoản chỉ gồm chữ, số và các ký tự . _ -',
+            'account_name.required' => 'Vui lòng nhập tên chủ tài khoản.',
+            'template.in' => 'Mẫu QR không hợp lệ.',
+        ]);
+
+        foreach ($data as $key => $value) {
+            Setting::put('vietqr.'.$key, trim((string) $value));
+        }
+
+        return back()->with('success', 'Đã lưu cài đặt thanh toán. Mã QR trên trang thanh toán sẽ dùng thông tin mới ngay.');
     }
 }

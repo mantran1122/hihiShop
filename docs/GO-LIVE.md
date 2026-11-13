@@ -71,6 +71,7 @@ php artisan hihi:db-check --env=production
 ## 5. Vận hành hằng ngày
 
 - Xem đơn mới: `/admin/orders`
+- Đổi tài khoản nhận tiền: `/admin/settings/payment` (lưu DB, không cần deploy)
 - Duyệt/ẩn đánh giá xấu: `/admin/reviews`
 - Quản lý voucher: `/admin/vouchers` (nhớ đặt "Lượt dùng mỗi khách" cho mã khuyến mãi)
 - Theo dõi lỗi: Vercel → Deployments → Functions → Logs (log ghi ra stderr)

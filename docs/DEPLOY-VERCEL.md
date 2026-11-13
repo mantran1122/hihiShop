@@ -215,6 +215,7 @@ rồi chạy `php artisan db:seed --class=DemoUserAndRolesSeeder --force --env=p
 - [ ] **Quản lý voucher** (`/admin/vouchers`): tạo mã mới → thấy mã trong "Kho Voucher" ở trang thanh toán; tắt mã → không áp dụng được nữa
 - [ ] **Quản lý đánh giá** (`/admin/reviews`): ẩn một đánh giá → đánh giá đó biến mất khỏi trang sản phẩm; bấm Duyệt để hiện lại
 - [ ] **Quản lý danh mục / thương hiệu** (`/admin/categories`, `/admin/brands`): thêm danh mục mới → hiện ở menu cửa hàng; danh mục còn sản phẩm thì không cho ẩn
+- [ ] **Cài đặt thanh toán** (`/admin/settings/payment`): đổi số tài khoản / ngân hàng → mã QR ở bước thanh toán dùng thông tin mới ngay
 - [ ] Huỷ một đơn đã đặt → tồn kho được cộng lại
 - [ ] Đổi quyền người dùng
 

@@ -10,6 +10,7 @@ use App\Models\DiaChi;
 use App\Models\ThanhToan;
 use App\Models\VanChuyen;
 use App\Models\Coupon;
+use App\Models\Setting;
 use App\Services\ShippingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -393,11 +394,11 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.success', $order->code)
                 ->with('info', 'Đơn hàng này đã được thanh toán thành công trước đó.');
         }
-        $bankId = config('payment.vietqr.bank_id', 'MB');
-        $bankName = config('payment.vietqr.bank_name', 'MB Bank (Quân Đội)');
-        $accountNo = config('payment.vietqr.account_no', '0988889999');
-        $accountName = config('payment.vietqr.account_name', 'HIHI SHOP');
-        $template = config('payment.vietqr.template', 'compact2');
+        $bankId = Setting::get('vietqr.bank_id', config('payment.vietqr.bank_id', 'MB'));
+        $bankName = Setting::get('vietqr.bank_name', config('payment.vietqr.bank_name', 'MB Bank (Quân Đội)'));
+        $accountNo = Setting::get('vietqr.account_no', config('payment.vietqr.account_no', '0988889999'));
+        $accountName = Setting::get('vietqr.account_name', config('payment.vietqr.account_name', 'HIHI SHOP'));
+        $template = Setting::get('vietqr.template', config('payment.vietqr.template', 'compact2'));
 
         $amount = (int) $order->grand_total;
         $memo = 'HIHI ' . $order->code;
