@@ -4,19 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Models\SanPham;
 use App\Models\UserActivity;
+use App\Support\StorefrontCache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = SanPham::active()->with(['bienTheMacDinh','anh','bienThes'])->latest()->paginate(12);
+        $page = (int) $request->input('page', 1);
+        $version = StorefrontCache::productVersion();
+
+        $products = Cache::store('runtime')->remember(
+            "hihi.products.index.{$version}.{$page}",
+            now()->addMinute(),
+            fn () => SanPham::active()
+                ->with(['bienTheMacDinh', 'anh', 'bienThes'])
+                ->latest()
+                ->paginate(12)
+        );
+
         $q = 'Tất cả sản phẩm';
+
         return view('search', compact('products', 'q'));
     }
 
     public function show($slug)
     {
-        $p = SanPham::with(['bienThes','anh','danhMuc'])->where('slug',$slug)->firstOrFail();
+        $version = StorefrontCache::productVersion();
+
+        $p = Cache::store('runtime')->remember(
+            "hihi.product.{$version}.{$slug}",
+            now()->addMinute(),
+            fn () => SanPham::with(['bienThes', 'anh', 'danhMuc'])
+                ->where('slug', $slug)
+                ->first()
+        );
+
+        abort_if($p === null, 404);
 
         $reviews = $p->approvedReviews()->with('user')->latest()->get();
 
@@ -60,7 +85,7 @@ class ProductController extends Controller
             // Không để lỗi tracking làm hỏng trang sản phẩm
         }
     }
-    // app/Http/Controllers/ProductController.php
+
     public function search(Request $request)
     {
         $q = $request->input('q');
@@ -71,5 +96,4 @@ class ProductController extends Controller
 
         return view('search', compact('products', 'q'));
     }
-
 }

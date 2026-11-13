@@ -116,6 +116,9 @@ class AdminController extends Controller
             $order->save();
         });
 
+        // Huỷ/hoàn tất đơn có thể đổi tồn kho → xoá cache sản phẩm
+        StorefrontCache::forgetProducts();
+
         return back()->with('success', "Đã cập nhật trạng thái đơn hàng #{$order->code} sang: {$order->status}");
     }
 

@@ -12,6 +12,7 @@ use App\Models\VanChuyen;
 use App\Models\Coupon;
 use App\Models\Setting;
 use App\Services\ShippingService;
+use App\Support\StorefrontCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -368,6 +369,9 @@ class CheckoutController extends Controller
 
             return $order;
         });
+
+        // Tồn kho đã thay đổi → xoá cache sản phẩm để trang chi tiết hiển thị đúng
+        StorefrontCache::forgetProducts();
 
         // Nếu chọn quét mã QR VietQR -> chuyển hướng sang trang thanh toán QR
         if ($paymentMethod === 'vietqr') {
