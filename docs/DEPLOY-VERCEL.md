@@ -169,6 +169,19 @@ Vercel Hobby vẫn gắn được domain riêng **miễn phí**:
 
 > ⚠️ Gói **Hobby** của Vercel chỉ dùng cho mục đích **phi thương mại**. Bán hàng thật cần nâng **Pro** (~20 USD/tháng) hoặc chuyển sang Railway/Render/VPS.
 
+### 5.4. Những gì đã xử lý riêng cho Vercel (đừng sửa nếu không hiểu)
+
+| Vấn đề | Cách xử lý trong repo |
+|---|---|
+| Preset Vite đòi thư mục `dist` | `vercel.json` đặt `framework: null` + `outputDirectory: "public"` |
+| Laravel cần ghi `bootstrap/cache` (read-only) | [api/index.php](../api/index.php) trỏ `APP_PACKAGES_CACHE` và `APP_SERVICES_CACHE` sang `/tmp/hihi-shop` |
+| Blade cần biên dịch view | `VIEW_COMPILED_PATH=/tmp/hihi-shop/views` |
+| Log không xem được | `LOG_CHANNEL=stderr` (hiện trong Vercel → Functions → Logs) |
+| CSS/JS/ảnh | Phục vụ tĩnh từ `public/` (output directory), không qua PHP |
+
+> Nếu gặp lỗi `bootstrap/cache directory must be present and writable` hoặc `Target class [view] does not exist`
+> thì kiểm tra các biến `/tmp` ở trên trong `api/index.php` — đây là các lỗi đã gặp và đã sửa.
+
 **Cách B — CLI:**
 
 ```powershell
