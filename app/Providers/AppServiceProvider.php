@@ -47,9 +47,23 @@ class AppServiceProvider extends ServiceProvider
                 $headerCategories = collect();
             }
 
+            // Thông báo chạy trên đầu trang (sửa được trong Admin → Cài đặt hiển thị)
+            $announcementEnabled = true;
+            $announcementText = 'Miễn phí giao hàng COD toàn quốc cho tất cả đơn hàng hôm nay';
+
+            try {
+                $announcement = \App\Models\Setting::many(['announcement.enabled', 'announcement.text']);
+                $announcementEnabled = ($announcement['announcement.enabled'] ?? '1') !== '0';
+                $announcementText = $announcement['announcement.text'] ?: $announcementText;
+            } catch (\Throwable $e) {
+                // Bảng settings chưa migrate → dùng mặc định
+            }
+
             $view->with('cartCount', $cartCount)
                  ->with('wishlistCount', $wishlistCount)
-                 ->with('headerCategories', $headerCategories);
+                 ->with('headerCategories', $headerCategories)
+                 ->with('announcementEnabled', $announcementEnabled)
+                 ->with('announcementText', $announcementText);
         });
     }
 }

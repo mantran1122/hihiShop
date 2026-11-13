@@ -22,6 +22,8 @@ use Spatie\Permission\Models\Role;
 class AdminController extends Controller
 {
     // 1. Dashboard tổng quan
+
+
     public function index()
     {
         $totalRevenue = DonHang::whereNotIn('status', ['cancelled'])->sum('grand_total');
@@ -40,6 +42,8 @@ class AdminController extends Controller
     }
 
     // 2. Quản lý Đơn hàng
+
+
     public function orders(Request $request)
     {
         $query = DonHang::with(['diaChi', 'user', 'mucs'])->latest();
@@ -54,6 +58,8 @@ class AdminController extends Controller
     }
 
     // 3. Chi tiết Đơn hàng
+
+
     public function orderDetail($id)
     {
         $order = DonHang::with(['diaChi', 'user', 'mucs.sanPham', 'mucs.bienThe', 'payment'])->findOrFail($id);
@@ -61,6 +67,8 @@ class AdminController extends Controller
     }
 
     // 4. Cập nhật trạng thái Đơn hàng
+
+
     public function updateOrderStatus(Request $request, $id)
     {
         $data = $request->validate([
@@ -111,6 +119,8 @@ class AdminController extends Controller
     }
 
     // 5. Quản lý Sản phẩm
+
+
     public function products(Request $request)
     {
         $query = SanPham::with(['danhMuc', 'bienThes', 'anh'])->latest();
@@ -126,6 +136,8 @@ class AdminController extends Controller
     }
 
     // 6. Bật / Tắt trạng thái Sản phẩm
+
+
     public function toggleProductStatus($id)
     {
         $product = SanPham::findOrFail($id);
@@ -137,6 +149,8 @@ class AdminController extends Controller
     }
 
     // 6.1. Form thêm sản phẩm
+
+
     public function createProduct()
     {
         return view('admin.products.form', [
@@ -147,6 +161,8 @@ class AdminController extends Controller
     }
 
     // 6.2. Lưu sản phẩm mới (kèm 1 biến thể mặc định)
+
+
     public function storeProduct(Request $request)
     {
         $data = $this->validateProductPayload($request);
@@ -178,6 +194,8 @@ class AdminController extends Controller
     }
 
     // 6.3. Form sửa sản phẩm
+
+
     public function editProduct($id)
     {
         $product = SanPham::with(['bienTheMacDinh', 'anh'])->findOrFail($id);
@@ -190,6 +208,8 @@ class AdminController extends Controller
     }
 
     // 6.4. Cập nhật sản phẩm + biến thể mặc định
+
+
     public function updateProduct(Request $request, $id)
     {
         $product = SanPham::with('bienTheMacDinh')->findOrFail($id);
@@ -290,6 +310,8 @@ class AdminController extends Controller
     }
 
     // 6.5. Danh sách voucher
+
+
     public function vouchers(Request $request)
     {
         $query = Coupon::query()->latest('id');
@@ -308,12 +330,16 @@ class AdminController extends Controller
     }
 
     // 6.6. Form tạo voucher
+
+
     public function createVoucher()
     {
         return view('admin.vouchers.form', ['voucher' => null]);
     }
 
     // 6.7. Lưu voucher mới
+
+
     public function storeVoucher(Request $request)
     {
         $data = $this->validateVoucherPayload($request);
@@ -325,6 +351,8 @@ class AdminController extends Controller
     }
 
     // 6.8. Form sửa voucher
+
+
     public function editVoucher($id)
     {
         $voucher = Coupon::findOrFail($id);
@@ -333,6 +361,8 @@ class AdminController extends Controller
     }
 
     // 6.9. Cập nhật voucher
+
+
     public function updateVoucher(Request $request, $id)
     {
         $voucher = Coupon::findOrFail($id);
@@ -345,6 +375,8 @@ class AdminController extends Controller
     }
 
     // 6.10. Bật / tắt voucher
+
+
     public function toggleVoucher($id)
     {
         $voucher = Coupon::findOrFail($id);
@@ -403,6 +435,8 @@ class AdminController extends Controller
     }
 
     // 6.11. Danh sách đánh giá sản phẩm
+
+
     public function reviews(Request $request)
     {
         $query = Review::with(['user', 'sanPham'])->latest('id');
@@ -417,6 +451,8 @@ class AdminController extends Controller
     }
 
     // 6.12. Duyệt / ẩn đánh giá
+
+
     public function toggleReview($id)
     {
         $review = Review::with('user')->findOrFail($id);
@@ -429,6 +465,8 @@ class AdminController extends Controller
     }
 
     // 6.13. Xoá đánh giá
+
+
     public function destroyReview($id)
     {
         $review = Review::findOrFail($id);
@@ -438,6 +476,8 @@ class AdminController extends Controller
     }
 
     // 6.14. Danh sách danh mục
+
+
     public function categories()
     {
         $categories = DanhMuc::withCount('sanPhams')
@@ -449,6 +489,8 @@ class AdminController extends Controller
     }
 
     // 6.15. Form tạo danh mục
+
+
     public function createCategory()
     {
         return view('admin.categories.form', [
@@ -458,6 +500,8 @@ class AdminController extends Controller
     }
 
     // 6.16. Lưu danh mục mới
+
+
     public function storeCategory(Request $request)
     {
         $data = $this->validateCategoryPayload($request);
@@ -469,6 +513,8 @@ class AdminController extends Controller
     }
 
     // 6.17. Form sửa danh mục
+
+
     public function editCategory($id)
     {
         $category = DanhMuc::findOrFail($id);
@@ -480,6 +526,8 @@ class AdminController extends Controller
     }
 
     // 6.18. Cập nhật danh mục
+
+
     public function updateCategory(Request $request, $id)
     {
         $category = DanhMuc::findOrFail($id);
@@ -492,6 +540,8 @@ class AdminController extends Controller
     }
 
     // 6.19. Bật / tắt danh mục
+
+
     public function toggleCategory($id)
     {
         $category = DanhMuc::withCount('sanPhams')->findOrFail($id);
@@ -540,6 +590,8 @@ class AdminController extends Controller
     }
 
     // 6.20. Danh sách thương hiệu
+
+
     public function brands()
     {
         $brands = ThuongHieu::withCount('sanPhams')->orderBy('name')->get();
@@ -548,12 +600,16 @@ class AdminController extends Controller
     }
 
     // 6.21. Form tạo thương hiệu
+
+
     public function createBrand()
     {
         return view('admin.brands.form', ['brand' => null]);
     }
 
     // 6.22. Lưu thương hiệu
+
+
     public function storeBrand(Request $request)
     {
         $data = $this->validateBrandPayload($request);
@@ -565,12 +621,16 @@ class AdminController extends Controller
     }
 
     // 6.23. Form sửa thương hiệu
+
+
     public function editBrand($id)
     {
         return view('admin.brands.form', ['brand' => ThuongHieu::findOrFail($id)]);
     }
 
     // 6.24. Cập nhật thương hiệu
+
+
     public function updateBrand(Request $request, $id)
     {
         $brand = ThuongHieu::findOrFail($id);
@@ -581,6 +641,8 @@ class AdminController extends Controller
     }
 
     // 6.25. Xoá thương hiệu (chỉ khi chưa gắn sản phẩm)
+
+
     public function destroyBrand($id)
     {
         $brand = ThuongHieu::withCount('sanPhams')->findOrFail($id);
@@ -623,6 +685,8 @@ class AdminController extends Controller
     }
 
     // 7. Quản lý Người dùng
+
+
     public function manageUsers()
     {
         $users = User::with('roles')->latest()->paginate(15);
@@ -631,6 +695,8 @@ class AdminController extends Controller
     }
 
     // 8. Cập nhật Vai trò Người dùng
+
+
     public function updateUserRole(Request $request, $id)
     {
         $request->validate([
@@ -650,6 +716,8 @@ class AdminController extends Controller
     }
 
     // 4.1. Admin xác nhận đã nhận tiền (dùng khi chưa nối webhook ngân hàng)
+
+
     public function confirmPayment($id)
     {
         $order = DonHang::findOrFail($id);
@@ -684,6 +752,8 @@ class AdminController extends Controller
     }
 
     // 9. Khoá / mở khoá tài khoản
+
+
     public function toggleUserStatus($id)    {
         $user = User::findOrFail($id);
 
@@ -700,6 +770,8 @@ class AdminController extends Controller
     }
 
     // 10. Cài đặt thanh toán VietQR
+
+
     public function paymentSettings()
     {
         $banks = [
@@ -737,6 +809,7 @@ class AdminController extends Controller
     }
 
     // 11. Lưu cài đặt thanh toán
+
     public function updatePaymentSettings(Request $request)
     {
         $data = $request->validate([
@@ -758,5 +831,37 @@ class AdminController extends Controller
         }
 
         return back()->with('success', 'Đã lưu cài đặt thanh toán. Mã QR trên trang thanh toán sẽ dùng thông tin mới ngay.');
+    }
+
+    // 12. Cài đặt hiển thị (thông báo đầu trang)
+
+
+    public function siteSettings()
+    {
+        $settings = [
+            'announcement_enabled' => Setting::get('announcement.enabled', '1') !== '0',
+            'announcement_text' => Setting::get('announcement.text')
+                ?: 'Miễn phí giao hàng COD toàn quốc cho tất cả đơn hàng hôm nay',
+        ];
+
+        return view('admin.settings.site', compact('settings'));
+    }
+
+    // 13. Lưu cài đặt hiển thị
+
+
+    public function updateSiteSettings(Request $request)
+    {
+        $request->validate([
+            'announcement_enabled' => ['nullable', 'boolean'],
+            'announcement_text' => ['nullable', 'string', 'max:200'],
+        ], [
+            'announcement_text.max' => 'Nội dung thông báo tối đa 200 ký tự.',
+        ]);
+
+        Setting::put('announcement.enabled', $request->boolean('announcement_enabled') ? '1' : '0');
+        Setting::put('announcement.text', trim((string) $request->input('announcement_text', '')));
+
+        return back()->with('success', 'Đã lưu cài đặt hiển thị. Thay đổi áp dụng ngay trên toàn bộ cửa hàng.');
     }
 }

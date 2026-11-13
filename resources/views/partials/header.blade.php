@@ -1,11 +1,12 @@
 <!-- resources/views/partials/header.blade.php -->
 <header x-data="{ mobileMenuOpen: false }" class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-shadow duration-200 shadow-sm">
     <!-- Top Announcement Bar -->
+    @if(($announcementEnabled ?? true) && !empty($announcementText ?? null))
     <div class="bg-slate-900 text-slate-300 text-xs py-2 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span class="font-medium text-slate-200">Miễn phí giao hàng COD toàn quốc cho tất cả đơn hàng hôm nay</span>
+                <span class="font-medium text-slate-200">{{ $announcementText }}</span>
             </div>
             <div class="hidden sm:flex items-center gap-4 text-slate-300">
                 <a href="tel:19000129" class="hover:text-white transition flex items-center gap-1.5 font-medium">
@@ -17,6 +18,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- Main Navigation Bar -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -142,6 +142,10 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     // Cài đặt thanh toán (VietQR)
     Route::get('/settings/payment', [AdminController::class, 'paymentSettings'])->name('settings.payment');
     Route::post('/settings/payment', [AdminController::class, 'updatePaymentSettings'])->name('settings.payment.update');
+
+    // Cài đặt hiển thị
+    Route::get('/settings/site', [AdminController::class, 'siteSettings'])->name('settings.site');
+    Route::post('/settings/site', [AdminController::class, 'updateSiteSettings'])->name('settings.site.update');
 });
 
 // Trang lỗi 404
