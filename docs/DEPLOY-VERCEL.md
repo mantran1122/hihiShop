@@ -18,6 +18,8 @@ Storage ghi tạm: /tmp/hihi-shop/{views,sessions,cache,logs}
 
 ## 2. Chuẩn bị database — TiDB Cloud
 
+> **Trạng thái hiện tại:** database `hihi_shop` đã được tạo trên TiDB Cloud Serverless (region Singapore, TiDB v8.5.3), đã chạy **22 migration + seed dữ liệu demo** và kiểm tra kết nối TLS thành công. Thông tin đăng nhập nằm trong `.env.production` ở máy dev (file này đã gitignore) và cần nhập lại vào Vercel → Environment Variables.
+
 Vercel **không** có MySQL sẵn và không dùng được SQLite file → dùng **TiDB Cloud Serverless** (MySQL-compatible, có free tier).
 
 ### 2.1. Tạo cluster và lấy thông số

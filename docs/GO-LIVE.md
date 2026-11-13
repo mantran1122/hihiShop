@@ -4,6 +4,9 @@ Danh sách việc **bắt buộc** phải xong trước khi cho khách thật mu
 
 ## 1. Cấu hình bắt buộc
 
+> **Đã xong:** database TiDB (`hihi_shop`) đã migrate + seed, có thể test luồng đặt hàng thật.
+> **Còn lại:** nhập biến môi trường lên Vercel, SMTP thật, webhook thanh toán thật, đổi tài khoản demo.
+
 | Việc | Cách làm |
 |---|---|
 | `APP_ENV=production`, `APP_DEBUG=false` | Nếu để `APP_DEBUG=true`, lỗi sẽ lộ stack trace + biến môi trường |
