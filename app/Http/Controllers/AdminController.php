@@ -17,6 +17,7 @@ use App\Models\DanhMuc;
 use App\Models\Setting;
 use App\Models\ThanhToan;
 use App\Models\ThuongHieu;
+use App\Support\StorefrontCache;
 use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
@@ -144,6 +145,8 @@ class AdminController extends Controller
         $product->is_active = !$product->is_active;
         $product->save();
 
+        StorefrontCache::forgetProducts();
+
         $st = $product->is_active ? 'Đã kích hoạt' : 'Đã ẩn';
         return back()->with('success', "{$st} sản phẩm: {$product->name}");
     }
@@ -188,6 +191,8 @@ class AdminController extends Controller
 
             return $product;
         });
+
+        StorefrontCache::forgetProducts();
 
         return redirect()->route('admin.products.index')
             ->with('success', "Đã thêm sản phẩm: {$product->name}");
@@ -242,6 +247,8 @@ class AdminController extends Controller
 
             $this->syncCoverImage($product, $data['image'] ?? null);
         });
+
+        StorefrontCache::forgetProducts();
 
         return redirect()->route('admin.products.index')
             ->with('success', "Đã cập nhật sản phẩm: {$product->name}");
@@ -508,6 +515,8 @@ class AdminController extends Controller
 
         DanhMuc::create($data);
 
+        StorefrontCache::forgetCategories();
+
         return redirect()->route('admin.categories.index')
             ->with('success', "Đã thêm danh mục: {$data['name']}");
     }
@@ -535,6 +544,8 @@ class AdminController extends Controller
 
         $category->update($data);
 
+        StorefrontCache::forgetCategories();
+
         return redirect()->route('admin.categories.index')
             ->with('success', "Đã cập nhật danh mục: {$category->name}");
     }
@@ -553,6 +564,8 @@ class AdminController extends Controller
 
         $category->is_active = !$category->is_active;
         $category->save();
+
+        StorefrontCache::forgetCategories();
 
         $status = $category->is_active ? 'Đã bật' : 'Đã ẩn';
 

@@ -17,7 +17,11 @@ class DanhMuc extends Model
 
     public function getImageUrlAttribute()
     {
-        $prod = $this->sanPhams()->with('anh')->first();
+        // Ưu tiên quan hệ đã eager load để tránh N+1 query
+        $prod = $this->relationLoaded('sanPhams')
+            ? $this->sanPhams->first()
+            : $this->sanPhams()->with('anh')->first();
+
         return $prod?->image_url ?? asset('images/placeholder.svg');
     }
 }

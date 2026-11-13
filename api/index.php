@@ -83,6 +83,7 @@ $defaults = [
 if (str_starts_with($tmpBase, '/')) {
     $defaults['APP_PACKAGES_CACHE'] = $tmpBase.'/packages.php';
     $defaults['APP_SERVICES_CACHE'] = $tmpBase.'/services.php';
+    $defaults['RUNTIME_CACHE_PATH'] = $tmpBase.'/cache';
 }
 
 foreach ($defaults as $key => $value) {

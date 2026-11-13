@@ -38,6 +38,13 @@ return [
             'serialize' => false,
         ],
 
+        // Cache nhanh cho dữ liệu ít đổi (settings, danh mục, trang chủ).
+        // Trên Vercel trỏ về /tmp qua RUNTIME_CACHE_PATH để ghi được.
+        'runtime' => [
+            'driver' => env('RUNTIME_CACHE_DRIVER', 'file'),
+            'path' => env('RUNTIME_CACHE_PATH', storage_path('framework/cache/runtime')),
+        ],
+
         'database' => [
             'driver' => 'database',
             'connection' => env('DB_CACHE_CONNECTION'),

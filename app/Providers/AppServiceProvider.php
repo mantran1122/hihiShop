@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Pagination\Paginator;
 use App\Models\GioHang;
 use App\Models\DanhMuc;
+use App\Models\Setting;
 use App\Models\Wishlist;
 
 class AppServiceProvider extends ServiceProvider
@@ -41,18 +43,29 @@ class AppServiceProvider extends ServiceProvider
                 $wishlistCount = 0;
             }
 
+            // Danh mục cho menu: cache 5 phút (xóa cache khi admin sửa danh mục)
+            $headerCategories = collect();
             try {
-                $headerCategories = DanhMuc::active()->orderBy('position')->get();
+                $headerCategories = Cache::store('runtime')->remember(
+                    'hihi.header_categories',
+                    now()->addMinutes(5),
+                    fn () => DanhMuc::active()->orderBy('position')->get()
+                );
             } catch (\Throwable $e) {
                 $headerCategories = collect();
             }
 
-            // Thông báo chạy trên đầu trang (sửa được trong Admin → Cài đặt hiển thị)
+            // Thông báo chạy trên đầu trang (sửa trong Admin → Cài đặt hiển thị)
             $announcementEnabled = true;
             $announcementText = 'Miễn phí giao hàng COD toàn quốc cho tất cả đơn hàng hôm nay';
 
             try {
-                $announcement = \App\Models\Setting::many(['announcement.enabled', 'announcement.text']);
+                $announcement = Cache::store('runtime')->remember(
+                    'hihi.announcement',
+                    now()->addMinutes(10),
+                    fn () => Setting::many(['announcement.enabled', 'announcement.text'])
+                );
+
                 $announcementEnabled = ($announcement['announcement.enabled'] ?? '1') !== '0';
                 $announcementText = $announcement['announcement.text'] ?: $announcementText;
             } catch (\Throwable $e) {

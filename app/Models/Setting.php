@@ -25,6 +25,13 @@ class Setting extends Model
             ['key' => $key],
             ['value' => $value === null ? null : (string) $value]
         );
+
+        // Xoá cache hiển thị để thay đổi có hiệu lực ngay
+        try {
+            \Illuminate\Support\Facades\Cache::store('runtime')->forget('hihi.announcement');
+        } catch (\Throwable $e) {
+            // bỏ qua nếu cache chưa sẵn sàng
+        }
     }
 
     /**
