@@ -179,6 +179,18 @@ Vercel Hobby vẫn gắn được domain riêng **miễn phí**:
 | Log không xem được | `LOG_CHANNEL=stderr` (hiện trong Vercel → Functions → Logs) |
 | CSS/JS/ảnh | Phục vụ tĩnh từ `public/` (output directory), không qua PHP |
 | Trang chậm 9–11 giây | Function chạy ở Mỹ (`iad1`) trong khi TiDB ở Singapore → `vercel.json` đặt `regions: ["sin1"]`, TTFB giảm còn ~0,6–0,8s |
+| Truy vấn lặp lại (N+1) | Store cache `runtime` (file trong `/tmp`) cho settings, danh mục, trang chủ, trang sản phẩm; `DanhMuc::image_url` dùng quan hệ đã eager load |
+| Cache cũ sau khi admin sửa | `App\Support\StorefrontCache` tăng "version" sản phẩm / xoá key tương ứng mỗi khi admin cập nhật |
+
+### Hiệu năng đo được (sau tối ưu)
+
+| Trang | Trước | Sau (warm) | Query |
+|---|---|---|---|
+| `/` | ~11 s | **0,24–0,27 s** | 20 → 3 |
+| `/products` | ~10 s | **0,31–0,33 s** | 12 → 8 |
+| `/product/{slug}` | ~9 s | **0,30–0,38 s** | 15 → 11 |
+
+Header `Server-Timing: app;dur=…, db;dur=…, dbq;count=…` được gắn vào mọi response để theo dõi (xem DevTools → Network → Timing).
 
 > Nếu gặp lỗi `bootstrap/cache directory must be present and writable` hoặc `Target class [view] does not exist`
 > thì kiểm tra các biến `/tmp` ở trên trong `api/index.php` — đây là các lỗi đã gặp và đã sửa.
