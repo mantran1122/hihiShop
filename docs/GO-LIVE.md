@@ -34,6 +34,15 @@ Hiện có 2 đường: nút "Mô phỏng thanh toán" (chỉ để test) và we
 - Tạo admin thật bằng `ADMIN_EMAIL` + `ADMIN_PASSWORD` trong biến môi trường, rồi chạy `php artisan db:seed --class=DemoUserAndRolesSeeder --force --env=production`.
 - Nếu DB production đã được seed từ trước, kiểm tra và **đổi mật khẩu / xoá** các tài khoản `admin@example.com`, `staff@example.com`, `customer@example.com`.
 
+### 2.4. Đánh giá mẫu (nếu đang dùng để demo)
+Đánh giá mẫu được tạo bởi 4 tài khoản `*.demo@hihishop.vn`. Trước khi bán thật nên xoá:
+
+```powershell
+php artisan hihi:demo-reviews-clear --purge-users --env=production
+```
+
+Sau đó chỉ giữ đánh giá do khách thật gửi (duyệt ở `/admin/reviews`).
+
 ### 2.4. Dữ liệu & sao lưu
 - Bật backup tự động cho TiDB Cloud (hoặc `mysqldump` định kỳ ra nơi khác)
 - Thử phục hồi 1 lần trước khi mở bán
