@@ -52,6 +52,7 @@ Hiện có 2 đường: nút "Mô phỏng thanh toán" (chỉ để test) và we
 - XSS: Blade escape mặc định; chat widget escape trước khi render
 - Chặn xem đơn hàng của người khác (success/QR/status/simulate chỉ chủ đơn hoặc Admin)
 - Rate limit: login 10 lần/phút, chat 40 request/phút
+- Tài khoản bị khoá (`is_active = false`) không đăng nhập được — admin bật/tắt tại `/admin/users`
 - Chống sửa giá: mọi cước ship/voucher/tổng tiền tính lại ở server
 - Chống oversell: khoá `lockForUpdate` khi trừ tồn kho trong transaction
 - Huỷ đơn hoàn tồn kho + hoàn lượt voucher

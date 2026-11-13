@@ -41,7 +41,11 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // Chỉ cho phép tài khoản đang hoạt động đăng nhập (admin có thể khoá ở /admin/users)
+        $credentials = $this->only('email', 'password');
+        $credentials['is_active'] = true;
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

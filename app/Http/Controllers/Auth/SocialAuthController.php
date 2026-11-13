@@ -132,6 +132,11 @@ class SocialAuthController extends Controller
             return $user;
         });
 
+        if (!$user->is_active) {
+            return redirect()->route('login')
+                ->with('error', 'Tài khoản của bạn đang bị tạm khoá. Vui lòng liên hệ hotline 1900 0129 để được hỗ trợ.');
+        }
+
         Auth::login($user, true);
         request()->session()->regenerate();
 

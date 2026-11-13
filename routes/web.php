@@ -135,6 +135,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     // Quản lý người dùng
     Route::get('/users', [AdminController::class, 'manageUsers'])->name('users');
     Route::post('/users/{id}/role', [AdminController::class, 'updateUserRole'])->name('users.updateRole');
+    Route::post('/users/{id}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggleStatus');
 });
 
 // Trang lỗi 404

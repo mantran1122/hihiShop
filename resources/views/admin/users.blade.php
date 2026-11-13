@@ -23,6 +23,7 @@
                         <th class="p-4">Email</th>
                         <th class="p-4">Ngày đăng ký</th>
                         <th class="p-4">Vai trò hiện tại</th>
+                        <th class="p-4 text-center">Trạng thái</th>
                         <th class="p-4 text-center">Đổi vai trò</th>
                     </tr>
                 </thead>
@@ -48,6 +49,18 @@
                                     <span class="badge-info text-xs font-bold px-2.5 py-0.5">Staff</span>
                                 @else
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">Khách hàng</span>
+                                @endif
+                            </td>
+                            <td class="p-4 text-center">
+                                @if($u->id === auth()->id())
+                                    <span class="badge-success text-xs font-bold px-2.5 py-0.5">Đang dùng</span>
+                                @else
+                                    <form method="POST" action="{{ route('admin.users.toggleStatus', $u->id) }}" class="m-0">
+                                        @csrf
+                                        <button type="submit" class="btn-sm {{ $u->is_active ? 'btn-danger' : 'btn-primary' }}">
+                                            {{ $u->is_active ? 'Khoá' : 'Mở khoá' }}
+                                        </button>
+                                    </form>
                                 @endif
                             </td>
                             <td class="p-4 text-center">

@@ -621,7 +621,8 @@ class AdminController extends Controller
     }
 
     // 7. Quản lý Người dùng
-    public function manageUsers()    {
+    public function manageUsers()
+    {
         $users = User::with('roles')->latest()->paginate(15);
         $roles = Role::all();
         return view('admin.users', compact('users', 'roles'));
@@ -644,5 +645,22 @@ class AdminController extends Controller
         $user->syncRoles([$request->role]);
 
         return back()->with('success', "Đã gán vai trò '{$request->role}' cho tài khoản {$user->email}");
+    }
+
+    // 9. Khoá / mở khoá tài khoản
+    public function toggleUserStatus($id)
+    {
+        $user = User::findOrFail($id);
+
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'Bạn không thể tự khoá tài khoản đang đăng nhập.');
+        }
+
+        $user->is_active = !$user->is_active;
+        $user->save();
+
+        $status = $user->is_active ? 'Đã mở khoá' : 'Đã khoá';
+
+        return back()->with('success', "{$status} tài khoản {$user->email}");
     }
 }
