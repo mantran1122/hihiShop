@@ -547,6 +547,35 @@ class CheckoutController extends Controller
         return response()->json(['success' => true, 'message' => 'Webhook received but no matching pending order']);
     }
 
+    /**
+     * Khách báo "Tôi đã chuyển khoản" — KHÔNG tự đánh dấu đã trả tiền,
+     * chỉ ghi nhận để admin kiểm tra và xác nhận.
+     */
+    public function reportTransfer(Request $request, $code)
+    {
+        $order = DonHang::where('code', $code)->firstOrFail();
+
+        $this->authorizeOrderAccess($order);
+
+        if ($order->payment_status === 'paid') {
+            return response()->json([
+                'success' => true,
+                'already_paid' => true,
+                'message' => 'Đơn hàng đã được thanh toán.',
+            ]);
+        }
+
+        if (!$order->customer_reported_paid_at) {
+            $order->update(['customer_reported_paid_at' => now()]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'already_paid' => false,
+            'message' => 'Đã ghi nhận. Shop sẽ kiểm tra và xác nhận trong 1–2 phút.',
+        ]);
+    }
+
     public function success($code)
     {
         $order = DonHang::with(['diaChi', 'mucs.sanPham', 'mucs.bienThe', 'payment', 'shipment'])

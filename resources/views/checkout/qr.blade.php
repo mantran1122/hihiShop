@@ -5,6 +5,7 @@
     orderCode: '{{ $order->code }}',
     statusUrl: '{{ route('checkout.payment.status', $order->code) }}',
     simulateUrl: '{{ route('checkout.payment.simulate', $order->code) }}',
+    reportUrl: '{{ route('checkout.payment.reported', $order->code) }}',
     initialSeconds: 15 * 60
 })">
     
@@ -205,10 +206,22 @@
                         </button>
                     </div>
                 @else
-                    <div class="pt-2 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-xs text-slate-600 leading-relaxed">
-                        <p class="font-bold text-slate-700 mb-1">Sau khi chuyển khoản</p>
-                        Hệ thống tự động xác nhận trong 1–2 phút và chuyển bạn sang trang hoàn tất đơn hàng.
-                        Nếu sau 10 phút đơn chưa cập nhật, vui lòng gọi <a href="tel:19000129" class="font-bold text-rose-600">1900 0129</a> kèm mã đơn.
+                    <div class="pt-2 space-y-3">
+                        <button type="button" @click="reportTransfer()" :disabled="reported || simulating"
+                                class="btn-primary w-full py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-rose-600/20 flex items-center justify-center gap-2 disabled:opacity-60">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span x-text="reported ? 'Đã ghi nhận — chờ shop xác nhận' : 'Tôi đã chuyển khoản xong'"></span>
+                        </button>
+
+                        <div x-show="reported" x-cloak class="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-xs text-emerald-800 leading-relaxed">
+                            <p class="font-bold mb-1">Đã ghi nhận thông báo của bạn</p>
+                            Shop sẽ kiểm tra giao dịch và xác nhận trong 1–2 phút. Trang này tự cập nhật khi đơn được xác nhận.
+                            Nếu quá 10 phút chưa thấy, gọi <a href="tel:19000129" class="font-bold text-rose-600">1900 0129</a> kèm mã đơn.
+                        </div>
+
+                        <p class="text-[11px] text-slate-500 text-center">
+                            Hệ thống tự động kiểm tra mỗi 3 giây.
+                        </p>
                     </div>
                 @endif
 
@@ -233,9 +246,37 @@ function vietqrPayment(config) {
         countdown: config.initialSeconds,
         checking: false,
         simulating: false,
+        reported: {{ $order->customer_reported_paid_at ? 'true' : 'false' }},
         pollCount: 0,
         timerInterval: null,
         pollingInterval: null,
+
+        async reportTransfer() {
+            if (this.reported) return;
+
+            try {
+                const res = await fetch(config.reportUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+                const data = await res.json();
+
+                if (data.already_paid) {
+                    window.location.reload();
+                    return;
+                }
+
+                if (res.ok && data.success) {
+                    this.reported = true;
+                }
+            } catch (e) {
+                console.warn('Không gửi được thông báo chuyển khoản', e);
+            }
+        },
 
         init() {
             // Start countdown

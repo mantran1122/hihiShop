@@ -15,6 +15,7 @@ use App\Models\BienTheSanPham;
 use App\Models\User;
 use App\Models\DanhMuc;
 use App\Models\Setting;
+use App\Models\ThanhToan;
 use App\Models\ThuongHieu;
 use Spatie\Permission\Models\Role;
 
@@ -648,9 +649,42 @@ class AdminController extends Controller
         return back()->with('success', "Đã gán vai trò '{$request->role}' cho tài khoản {$user->email}");
     }
 
-    // 9. Khoá / mở khoá tài khoản
-    public function toggleUserStatus($id)
+    // 4.1. Admin xác nhận đã nhận tiền (dùng khi chưa nối webhook ngân hàng)
+    public function confirmPayment($id)
     {
+        $order = DonHang::findOrFail($id);
+
+        if ($order->payment_status === 'paid') {
+            return back()->with('info', "Đơn #{$order->code} đã ở trạng thái đã thanh toán.");
+        }
+
+        DB::transaction(function () use ($order) {
+            $order->update([
+                'payment_status' => 'paid',
+                'status' => 'processing',
+            ]);
+
+            ThanhToan::updateOrCreate(
+                ['order_id' => $order->id],
+                [
+                    'provider' => 'manual',
+                    'transaction_id' => 'MANUAL-' . strtoupper(Str::random(8)),
+                    'status' => 'paid',
+                    'amount' => $order->grand_total,
+                    'payload' => [
+                        'confirmed_by' => auth()->id(),
+                        'confirmed_at' => now()->toIso8601String(),
+                        'customer_reported_at' => optional($order->customer_reported_paid_at)->toIso8601String(),
+                    ],
+                ]
+            );
+        });
+
+        return back()->with('success', "Đã xác nhận thanh toán cho đơn #{$order->code}.");
+    }
+
+    // 9. Khoá / mở khoá tài khoản
+    public function toggleUserStatus($id)    {
         $user = User::findOrFail($id);
 
         if ($user->id === auth()->id()) {

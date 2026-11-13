@@ -26,10 +26,8 @@ Khách quên mật khẩu sẽ **không nhận được mail**. Cần:
 
 ### 2.2. Xác nhận thanh toán thật
 Hiện có 2 đường: nút "Mô phỏng thanh toán" (chỉ để test) và webhook `/payment/webhook`.
-- Nối Casso / PayOS / SePay hoặc webhook ngân hàng → trỏ về `https://<domain>/payment/webhook`
-- Đặt `PAYMENT_WEBHOOK_SECRET` + cấu hình bên đối tác gửi header `X-Webhook-Signature` (HMAC-SHA256 của raw body)
-- **Nút mô phỏng thanh toán đã tự động ẩn trên production**: chỉ hiện khi `APP_ENV=local` hoặc tài khoản Admin. Khách trên production chỉ thấy hướng dẫn chờ hệ thống tự xác nhận.
-- Thử chuyển khoản thật 1 đơn nhỏ → kiểm tra đơn tự chuyển `paid`
+- Nối Casso / PayOS / SePay hoặc webhook ngân hàng → trỏ về `https://<domain>/payment/webhook` (tự động 100%)
+- **Chưa nối webhook** thì dùng luồng thủ công: khách bấm "Tôi đã chuyển khoản xong" → admin thấy cảnh báo trong `/admin/orders/{id}` → đối chiếu sao kê → bấm **"Xác nhận đã nhận tiền"** (khách tự chuyển sang trang thành công nhờ polling 3 giây)
 
 ### 2.3. Tài khoản đăng nhập
 - Seeder **không tạo tài khoản demo trên production** (chỉ local/testing).

@@ -52,6 +52,7 @@ Route::prefix('checkout')->name('checkout.')->group(function () {
     Route::get('/payment/{code}', [CheckoutController::class, 'qrPayment'])->middleware('auth')->name('payment.qr');
     Route::get('/payment/{code}/status', [CheckoutController::class, 'checkStatus'])->middleware('auth')->name('payment.status');
     Route::post('/payment/{code}/simulate', [CheckoutController::class, 'simulatePayment'])->middleware('auth')->name('payment.simulate');
+    Route::post('/payment/{code}/reported', [CheckoutController::class, 'reportTransfer'])->middleware('auth')->name('payment.reported');
     Route::get('/success/{code}', [CheckoutController::class, 'success'])->middleware('auth')->name('success');
 });
 
@@ -94,6 +95,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders.index');
     Route::get('/orders/{id}', [AdminController::class, 'orderDetail'])->name('orders.show');
     Route::post('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.updateStatus');
+    Route::post('/orders/{id}/confirm-payment', [AdminController::class, 'confirmPayment'])->name('orders.confirmPayment');
 
     // Quản lý sản phẩm
     Route::get('/products', [AdminController::class, 'products'])->name('products.index');

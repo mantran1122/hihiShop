@@ -8,11 +8,15 @@ class DonHang extends Model
 {
     protected $table = 'orders';
     protected $fillable = [
-        'user_id','code','status','cancel_reason','admin_note','payment_status','shipping_status',
+        'user_id','code','status','cancel_reason','admin_note','payment_status','customer_reported_paid_at','shipping_status',
         'shipping_carrier','shipping_service',
         'shipping_address_id','billing_address_id','currency',
         'subtotal','discount_total','coupon_code','shipping_coupon_code',
         'shipping_total','shipping_discount','grand_total'
+    ];
+
+    protected $casts = [
+        'customer_reported_paid_at' => 'datetime',
     ];
 
     public function mucs(){ return $this->hasMany(MucDonHang::class, 'order_id'); }

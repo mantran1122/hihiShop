@@ -119,6 +119,29 @@
                     </span>
                 </p>
                 <p><strong>Giao hàng:</strong> <span class="capitalize">{{ $order->shipping_status }}</span></p>
+
+                @if($order->payment_status !== 'paid')
+                    <div class="pt-3 mt-3 border-t border-slate-100 space-y-2">
+                        @if($order->customer_reported_paid_at)
+                            <p class="text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
+                                Khách đã báo chuyển khoản lúc {{ $order->customer_reported_paid_at->format('d/m/Y H:i') }}
+                            </p>
+                        @else
+                            <p class="text-xs text-slate-500">
+                                Khách chưa báo chuyển khoản. Đối chiếu sao kê ngân hàng với nội dung
+                                <code class="font-mono text-[11px] bg-slate-100 px-1 py-0.5 rounded">HIHI {{ $order->code }}</code>.
+                            </p>
+                        @endif
+
+                        <form method="POST" action="{{ route('admin.orders.confirmPayment', $order->id) }}" class="m-0"
+                              onsubmit="return confirm('Xác nhận đã nhận được tiền cho đơn này?')">
+                            @csrf
+                            <button type="submit" class="btn-primary w-full text-xs py-2.5">
+                                Xác nhận đã nhận tiền
+                            </button>
+                        </form>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
