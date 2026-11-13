@@ -78,12 +78,16 @@ $defaults = [
     'LOG_STACK' => 'stderr',
 ];
 
-// Chỉ áp dụng khi /tmp là đường dẫn tuyệt đối kiểu POSIX (Vercel/Linux).
-// Laravel bắt buộc manifest packages/services phải ghi được — trên Vercel
-// bootstrap/cache là read-only nên phải trỏ sang /tmp, nếu không app 500 ngay.
+// Manifest đã được commit sẵn trong deployment → dùng trực tiếp (không cần ghi).
+// Nếu vì lý do nào đó thiếu file, mới trỏ sang /tmp để Laravel tự build lại.
 if (str_starts_with($tmpBase, '/')) {
-    $defaults['APP_PACKAGES_CACHE'] = $tmpBase.'/packages.php';
-    $defaults['APP_SERVICES_CACHE'] = $tmpBase.'/services.php';
+    if (!is_file(dirname(__DIR__).'/bootstrap/cache/packages.php')) {
+        $defaults['APP_PACKAGES_CACHE'] = $tmpBase.'/packages.php';
+    }
+
+    if (!is_file(dirname(__DIR__).'/bootstrap/cache/services.php')) {
+        $defaults['APP_SERVICES_CACHE'] = $tmpBase.'/services.php';
+    }
 }
 
 foreach ($defaults as $key => $value) {

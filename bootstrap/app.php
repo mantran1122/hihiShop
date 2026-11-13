@@ -13,6 +13,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function ($middleware): void {
+        // Ghi thời gian xử lý vào header Server-Timing (theo dõi hiệu năng)
+        $middleware->append(\App\Http\Middleware\ServerTiming::class);
+
         // Vercel / PaaS chạy sau reverse proxy: tin header X-Forwarded-* để
         // Laravel nhận đúng HTTPS, sinh URL và cookie secure chính xác.
         $middleware->trustProxies(at: '*');
