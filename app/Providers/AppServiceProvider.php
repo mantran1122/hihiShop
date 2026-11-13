@@ -86,5 +86,35 @@ class AppServiceProvider extends ServiceProvider
                  ->with('announcementEnabled', $announcementEnabled)
                  ->with('announcementText', $announcementText);
         });
+
+        // Hotline + cam kết dùng chung toàn site (sửa trong Admin → Cài đặt hiển thị).
+        // Dùng composer '*' để giá trị được đọc lại mỗi lần render (không bị đóng băng
+        // theo vòng đời application, ví dụ trong test hoặc queue worker).
+        View::composer('*', function ($view) {
+            $siteHotline = '1900 0129';
+            $siteCommitment = 'Chính hãng 100%';
+
+            try {
+                $siteSettings = Cache::store('runtime')->remember(
+                    'hihi.site',
+                    now()->addMinutes(10),
+                    fn () => Setting::many(['site.hotline', 'site.commitment'])
+                );
+
+                if (!empty($siteSettings['site.hotline'])) {
+                    $siteHotline = $siteSettings['site.hotline'];
+                }
+
+                if (!empty($siteSettings['site.commitment'])) {
+                    $siteCommitment = $siteSettings['site.commitment'];
+                }
+            } catch (\Throwable $e) {
+                // Dùng giá trị mặc định
+            }
+
+            $view->with('siteHotline', $siteHotline)
+                 ->with('siteHotlineTel', preg_replace('/\D+/', '', $siteHotline))
+                 ->with('siteCommitment', $siteCommitment);
+        });
     }
 }

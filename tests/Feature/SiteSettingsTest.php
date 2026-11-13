@@ -90,4 +90,42 @@ class SiteSettingsTest extends TestCase
             ->post(route('admin.settings.site.update'), ['announcement_text' => 'hack'])
             ->assertStatus(403);
     }
+
+    public function test_default_hotline_is_shown(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Hotline: 1900 0129')
+            ->assertSee('tel:19000129');
+    }
+
+    public function test_admin_can_change_hotline_everywhere(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.settings.site.update'), [
+            'announcement_enabled' => 1,
+            'announcement_text' => 'Miễn phí giao hàng COD toàn quốc cho tất cả đơn hàng hôm nay',
+            'site_hotline' => '0912 345 678',
+            'site_commitment' => 'Bảo hành 12 tháng',
+        ])->assertRedirect()->assertSessionHas('success');
+
+        $this->assertSame('0912 345 678', Setting::get('site.hotline'));
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Hotline: 0912 345 678')
+            ->assertSee('tel:0912345678')
+            ->assertSee('Bảo hành 12 tháng')
+            ->assertDontSee('Hotline: 1900 0129');
+    }
+
+    public function test_hotline_must_be_a_phone_number(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.settings.site.update'), [
+            'announcement_enabled' => 1,
+            'announcement_text' => 'Test',
+            'site_hotline' => '<script>alert(1)</script>',
+        ])->assertSessionHasErrors('site_hotline');
+
+        $this->assertNull(Setting::get('site.hotline'));
+    }
 }

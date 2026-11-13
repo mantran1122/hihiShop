@@ -858,6 +858,8 @@ class AdminController extends Controller
             'announcement_enabled' => Setting::get('announcement.enabled', '1') !== '0',
             'announcement_text' => Setting::get('announcement.text')
                 ?: 'Miễn phí giao hàng COD toàn quốc cho tất cả đơn hàng hôm nay',
+            'hotline' => Setting::get('site.hotline') ?: '1900 0129',
+            'commitment' => Setting::get('site.commitment') ?: 'Chính hãng 100%',
         ];
 
         return view('admin.settings.site', compact('settings'));
@@ -871,12 +873,24 @@ class AdminController extends Controller
         $request->validate([
             'announcement_enabled' => ['nullable', 'boolean'],
             'announcement_text' => ['nullable', 'string', 'max:200'],
+            'site_hotline' => ['nullable', 'string', 'max:20', 'regex:/^[0-9][0-9 .+()-]{4,19}$/'],
+            'site_commitment' => ['nullable', 'string', 'max:40'],
         ], [
             'announcement_text.max' => 'Nội dung thông báo tối đa 200 ký tự.',
+            'site_hotline.regex' => 'Hotline chỉ gồm số và các ký tự . + ( ) - (ví dụ 1900 0129).',
+            'site_commitment.max' => 'Câu cam kết tối đa 40 ký tự.',
         ]);
 
         Setting::put('announcement.enabled', $request->boolean('announcement_enabled') ? '1' : '0');
         Setting::put('announcement.text', trim((string) $request->input('announcement_text', '')));
+
+        if ($request->filled('site_hotline')) {
+            Setting::put('site.hotline', trim((string) $request->input('site_hotline')));
+        }
+
+        if ($request->has('site_commitment')) {
+            Setting::put('site.commitment', trim((string) $request->input('site_commitment', '')));
+        }
 
         return back()->with('success', 'Đã lưu cài đặt hiển thị. Thay đổi áp dụng ngay trên toàn bộ cửa hàng.');
     }

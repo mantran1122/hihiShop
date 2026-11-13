@@ -28,7 +28,7 @@ class Setting extends Model
 
         // Xoá cache hiển thị để thay đổi có hiệu lực ngay
         try {
-            \Illuminate\Support\Facades\Cache::store('runtime')->forget('hihi.announcement');
+            \Illuminate\Support\Facades\Cache::store('runtime')->forget(['hihi.announcement', 'hihi.site']);
         } catch (\Throwable $e) {
             // bỏ qua nếu cache chưa sẵn sàng
         }
