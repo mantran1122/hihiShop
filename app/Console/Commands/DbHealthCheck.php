@@ -106,7 +106,7 @@ class DbHealthCheck extends Command
 
         $this->newLine();
         $this->info('SẴN SÀNG: CSDL đã có đủ dữ liệu để test.');
-        $this->line('Tài khoản demo: admin@example.com / admin123 · customer@example.com / customer123');
+        $this->line('Đăng nhập admin bằng tài khoản tạo từ ADMIN_EMAIL (production) hoặc tài khoản demo ở môi trường local.');
 
         return self::SUCCESS;
     }

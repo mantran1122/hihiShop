@@ -144,8 +144,16 @@ async function runTests() {
         console.log('📍 4. Đăng nhập Admin và kiểm tra Dashboard...');
         await page.goto('http://127.0.0.1:8000/login', { waitUntil: 'networkidle' });
 
-        await page.fill('form[action*="login"] input[name="email"]', 'admin@example.com');
-        await page.fill('form[action*="login"] input[name="password"]', 'admin123');
+        // Tài khoản đọc từ biến môi trường (không hard-code mật khẩu trong repo)
+        const ADMIN_EMAIL = process.env.HIHI_ADMIN_EMAIL || 'admin@example.com';
+        const ADMIN_PASSWORD = process.env.HIHI_ADMIN_PASSWORD || '';
+
+        if (!ADMIN_PASSWORD) {
+            console.warn('⚠️  Chưa đặt HIHI_ADMIN_PASSWORD - bỏ qua bước đăng nhập admin.');
+        }
+
+        await page.fill('form[action*="login"] input[name="email"]', ADMIN_EMAIL);
+        await page.fill('form[action*="login"] input[name="password"]', ADMIN_PASSWORD);
         await Promise.all([
             page.waitForNavigation({ waitUntil: 'networkidle' }).catch(() => {}),
             page.click('form[action*="login"] button[type="submit"]')

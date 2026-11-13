@@ -175,13 +175,18 @@ Lưu ý:
 - Preview deployment của Vercel có URL riêng và Google **không hỗ trợ wildcard** → đăng nhập Google sẽ lỗi trên preview, chỉ chạy ở domain đã đăng ký.
 - Consent screen phải ở trạng thái **In production** thì người ngoài danh sách test mới đăng nhập được.
 
-## 7. Tài khoản demo (đổi mật khẩu trước khi cho người ngoài dùng)
+## 7. Tài khoản đăng nhập
 
-| Vai trò | Email | Mật khẩu |
-|---|---|---|
-| Admin | `admin@example.com` | `admin123` |
-| Staff | `staff@example.com` | `staff123` |
-| Customer | `customer@example.com` | `customer123` |
+**Production:** seeder **không** tạo tài khoản demo. Tạo admin thật bằng biến môi trường:
+
+```env
+ADMIN_EMAIL=ban@hihishop.vn
+ADMIN_PASSWORD=<mật khẩu mạnh>
+```
+
+rồi chạy `php artisan db:seed --class=DemoUserAndRolesSeeder --force --env=production` (chỉ tạo/cập nhật role, không đụng dữ liệu khác).
+
+**Local/testing:** tài khoản demo `admin@example.com`, `staff@example.com`, `customer@example.com` được tạo với mật khẩu lấy từ `DEMO_USER_PASSWORD` (mặc định chỉ khi chạy local/testing). Không dùng các tài khoản này trên production.
 
 ## 8. Checklist test cho admin
 

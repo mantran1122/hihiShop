@@ -31,9 +31,10 @@ Hiện có 2 đường: nút "Mô phỏng thanh toán" (chỉ để test) và we
 - **Nút mô phỏng thanh toán đã tự động ẩn trên production**: chỉ hiện khi `APP_ENV=local` hoặc tài khoản Admin. Khách trên production chỉ thấy hướng dẫn chờ hệ thống tự xác nhận.
 - Thử chuyển khoản thật 1 đơn nhỏ → kiểm tra đơn tự chuyển `paid`
 
-### 2.3. Tài khoản demo
-- Đổi mật khẩu hoặc **xoá** `admin@example.com / admin123`, `staff@example.com`, `customer@example.com` trước khi public
-- Tạo tài khoản admin riêng với mật khẩu mạnh
+### 2.3. Tài khoản đăng nhập
+- Seeder **không tạo tài khoản demo trên production** (chỉ local/testing).
+- Tạo admin thật bằng `ADMIN_EMAIL` + `ADMIN_PASSWORD` trong biến môi trường, rồi chạy `php artisan db:seed --class=DemoUserAndRolesSeeder --force --env=production`.
+- Nếu DB production đã được seed từ trước, kiểm tra và **đổi mật khẩu / xoá** các tài khoản `admin@example.com`, `staff@example.com`, `customer@example.com`.
 
 ### 2.4. Dữ liệu & sao lưu
 - Bật backup tự động cho TiDB Cloud (hoặc `mysqldump` định kỳ ra nơi khác)
