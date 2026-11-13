@@ -74,6 +74,10 @@ foreach (['views', 'sessions', 'cache', 'logs'] as $folder) {
 $defaults = [
     'VIEW_COMPILED_PATH' => $tmpBase.'/views',
     'SESSION_FILES_PATH' => $tmpBase.'/sessions',
+    // Laravel đọc/ghi danh sách package đã discover ở đây. Trên Vercel thư mục
+    // bootstrap/cache là read-only và file packages.php không được đóng gói,
+    // nên trỏ sang /tmp để Laravel tự build lại (nếu không sẽ thiếu service provider).
+    'APP_PACKAGES_CACHE' => $tmpBase.'/packages.php',
     // Ghi log ra stderr để Vercel hiển thị trong Functions → Logs
     'LOG_CHANNEL' => 'stderr',
     'LOG_STACK' => 'stderr',
@@ -94,7 +98,7 @@ foreach ($defaults as $key => $value) {
 // ---------------------------------------------------------------------------
 // 3. Chẩn đoán tạm (truy cập /?__probe=1) — chỉ trả boolean/không lộ giá trị
 // ---------------------------------------------------------------------------
-if (isset($_GET['__probe'])) {
+if (($_GET['__probe'] ?? null) === '1') {
     header('Content-Type: application/json; charset=UTF-8');
 
     echo json_encode([
@@ -103,8 +107,10 @@ if (isset($_GET['__probe'])) {
         'has_app_key' => !empty(getenv('APP_KEY') ?: ($_ENV['APP_KEY'] ?? '')),
         'has_db_host' => !empty(getenv('DB_HOST') ?: ($_ENV['DB_HOST'] ?? '')),
         'db_ssl' => getenv('DB_SSL') ?: ($_ENV['DB_SSL'] ?? null),
+        'session_driver' => getenv('SESSION_DRIVER') ?: ($_ENV['SESSION_DRIVER'] ?? null),
         'vendor_autoload' => is_file(dirname(__DIR__).'/vendor/autoload.php'),
         'bootstrap_packages' => is_file(dirname(__DIR__).'/bootstrap/cache/packages.php'),
+        'db_ca_file' => is_file(dirname(__DIR__).'/storage/certs/tidb-ca.pem'),
         'storage_writable' => is_writable(dirname(__DIR__).'/storage'),
         'tmp_writable' => is_writable(sys_get_temp_dir()),
         'extensions' => [
@@ -122,6 +128,27 @@ if (isset($_GET['__probe'])) {
 // ---------------------------------------------------------------------------
 // 4. Boot Laravel (bắt lỗi để chẩn đoán khi cần)
 // ---------------------------------------------------------------------------
+// Bắt lỗi fatal (E_ERROR...) để chẩn đoán khi cần
+register_shutdown_function(function () {
+    if (!isset($_GET['__probe'])) {
+        return;
+    }
+
+    $error = error_get_last();
+
+    if ($error && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
+        if (!headers_sent()) {
+            http_response_code(500);
+            header('Content-Type: application/json; charset=UTF-8');
+        }
+        echo json_encode([
+            'fatal' => $error['message'],
+            'file' => basename($error['file']),
+            'line' => $error['line'],
+        ]);
+    }
+});
+
 try {
     require $publicDir.'/index.php';
 } catch (\Throwable $e) {
