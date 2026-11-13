@@ -83,6 +83,7 @@ $defaults = [
 // Windows local dùng đường dẫn tuyệt đối kiểu C:\ nên Laravel sẽ ghép sai -> bỏ qua.
 if (str_starts_with($tmpBase, '/')) {
     $defaults['APP_PACKAGES_CACHE'] = $tmpBase.'/packages.php';
+    $defaults['APP_SERVICES_CACHE'] = $tmpBase.'/services.php';
 }
 
 foreach ($defaults as $key => $value) {
