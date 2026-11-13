@@ -121,7 +121,25 @@ GOOGLE_CLIENT_SECRET=...
 
 ## 5. Deploy
 
-**Cách A — Git integration (khuyến nghị):** push code lên GitHub → Vercel → Add New Project → Import repo. Mỗi lần push là một deployment, có preview URL.
+### 5.1. Đưa code lên Git (bắt buộc nếu deploy qua GitHub)
+
+Tạo repo trống trên GitHub (khuyến nghị để **Private** trong giai đoạn test), rồi:
+
+```powershell
+git remote add origin https://github.com/<tai-khoan>/hihi-shop.git
+git branch -M main
+git push -u origin main
+```
+
+Lưu ý:
+- `.env.production` **không** được commit (đã nằm trong `.gitignore`) → biến môi trường nhập trực tiếp trên Vercel.
+- `public/build` đã commit sẵn để Vercel không cần chạy `npm run build`.
+- Repo ~85MB (phần lớn là ảnh sản phẩm trong `public/images`) → lần push đầu có thể mất vài phút.
+- Nếu chưa cài Git credential, dùng Personal Access Token thay mật khẩu: `https://<token>@github.com/<tai-khoan>/hihi-shop.git`.
+
+### 5.2. Import vào Vercel
+
+**Cách A — Git integration (khuyến nghị):** Vercel → Add New Project → Import repo vừa push → nhập Environment Variables → Deploy. Mỗi lần push là một deployment mới, có preview URL.
 
 **Cách B — CLI:**
 
