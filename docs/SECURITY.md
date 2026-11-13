@@ -7,6 +7,7 @@ Ngày rà soát: 13/11/2026 · Phạm vi: toàn bộ mã nguồn (`app/`, `route
 | Hạng mục | Kết quả |
 |---|---|
 | Lỗ hổng nghiêm trọng trong code | **1** (webhook thanh toán) — đã sửa |
+| Semgrep SAST | **176 rule / 331 file → 0 finding** (`p/php`, `p/security-audit`, `p/owasp-top-ten`, `p/secrets`) |
 | Advisory dependency PHP | **52 → 0** (sau `composer update`) |
 | Advisory dependency JS | **18 → 3** (chỉ devDependencies, không lên production) |
 | SQL injection | Không phát hiện (không có raw SQL) |
@@ -97,7 +98,7 @@ CSP buộc phải cho `'unsafe-inline'`/`'unsafe-eval'` vì app dùng Alpine.js 
 | 6 | Cân nhắc `SESSION_DRIVER=cookie` hoặc `SESSION_ENCRYPT=true` | Tuỳ chọn |
 | 7 | Giới hạn `trustProxies('*')` nếu phát hiện bypass rate-limit qua `X-Forwarded-For` | Tuỳ chọn |
 | 8 | Sao lưu TiDB định kỳ và thử khôi phục | Nên |
-| 9 | Quét SAST tự động trong CI (Semgrep/CodeQL) — lần này **chưa chạy Semgrep** vì máy không cài | Nên |
+| 9 | Đưa Semgrep vào CI (chạy lại mỗi lần push) | Nên |
 
 ## 5. Cách kiểm tra lại
 
@@ -105,7 +106,9 @@ CSP buộc phải cho `'unsafe-inline'`/`'unsafe-eval'` vì app dùng Alpine.js 
 composer audit --no-dev          # phải: No security vulnerability advisories found
 npm audit                        # còn 3 moderate trong devDependencies
 php artisan test                 # 131 tests
+semgrep scan --config=p/php --config=p/security-audit --config=p/owasp-top-ten --config=p/secrets --metrics=off --exclude=vendor --exclude=node_modules .
 curl -I https://hihi-shop.vercel.app/   # kiểm tra CSP, X-Frame-Options...
 ```
 
-> Lưu ý: Semgrep không được cài trong môi trường này nên báo cáo dựa trên rà soát thủ công + `composer audit` + `npm audit` + bộ test. Nên bổ sung Semgrep/CodeQL trong CI trước khi mở rộng.
+> Semgrep chạy bằng Python (`pip install semgrep`), trên Windows cần thêm `%APPDATA%\Python\Python312\Scripts` vào PATH và đặt `PYTHONUTF8=1` để không lỗi encoding khi ghi JSON.
+> Kết quả lần này: 46 rule (php + security-audit) và 130 rule (owasp-top-ten + secrets) trên 331 file → **0 finding**. Nên đưa lệnh này vào CI để chạy lại mỗi lần push.
