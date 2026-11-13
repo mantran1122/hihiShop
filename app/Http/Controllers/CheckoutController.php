@@ -498,6 +498,18 @@ class CheckoutController extends Controller
     public function handleWebhook(Request $req)
     {
         $secret = (string) config('payment.webhook.secret', '');
+        $isLocal = app()->environment(['local', 'testing']);
+
+        // Trên production BẮT BUỘC có secret: nếu không, bất kỳ ai biết mã đơn
+        // cũng có thể gọi webhook để đánh dấu đơn đã thanh toán (mất tiền).
+        if ($secret === '' && !$isLocal) {
+            Log::error('Payment webhook bị từ chối: chưa cấu hình PAYMENT_WEBHOOK_SECRET.');
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Webhook chưa được cấu hình.',
+            ], 503);
+        }
 
         // Nếu có cấu hình secret thì bắt buộc kiểm tra chữ ký HMAC-SHA256 của raw body.
         if ($secret !== '') {
@@ -520,12 +532,26 @@ class CheckoutController extends Controller
 
         $payload = $req->all();
         $description = $payload['description'] ?? $payload['content'] ?? ($payload['data']['description'] ?? '');
-        $amount = $payload['amount'] ?? ($payload['data']['amount'] ?? 0);
+        $amount = (float) ($payload['amount'] ?? ($payload['data']['amount'] ?? 0));
         $transactionId = $payload['reference'] ?? $payload['transactionId'] ?? Str::random(12);
 
-        if (preg_match('/OD[A-Z0-9]{8}/i', $description, $matches)) {
+        if (preg_match('/OD[A-Z0-9]{8}/i', (string) $description, $matches)) {
             $orderCode = strtoupper($matches[0]);
             $order = DonHang::where('code', $orderCode)->first();
+
+            // Số tiền (nếu đối tác gửi kèm) không được nhỏ hơn tổng đơn
+            if ($order && $amount > 0 && $amount + 0.01 < (float) $order->grand_total) {
+                Log::warning('Payment webhook: số tiền nhỏ hơn giá trị đơn', [
+                    'order' => $orderCode,
+                    'amount' => $amount,
+                    'grand_total' => $order->grand_total,
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Amount mismatch',
+                ], 422);
+            }
 
             if ($order && $order->payment_status !== 'paid') {
                 $order->update([

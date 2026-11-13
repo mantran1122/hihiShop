@@ -56,13 +56,13 @@ class PaymentWebhookTest extends TestCase
         $this->order = DonHang::latest('id')->firstOrFail();
     }
 
-    public function test_webhook_marks_order_paid_when_no_secret_configured(): void
+    public function test_webhook_marks_order_paid_when_no_secret_configured_in_local_env(): void
     {
         config(['payment.webhook.secret' => '']);
 
         $response = $this->postJson('/payment/webhook', [
             'description' => 'HIHI '.$this->order->code,
-            'amount' => 100000,
+            'amount' => (int) $this->order->grand_total,
             'reference' => 'TX-NO-SECRET',
         ]);
 

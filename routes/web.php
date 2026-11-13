@@ -34,7 +34,7 @@ Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('categ
 // Chi tiết sản phẩm & Tìm kiếm
 Route::get('/products', [ProductController::class, 'index'])->name('product.index');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');
-Route::get('/search', [ProductController::class, 'search'])->name('search');
+Route::get('/search', [ProductController::class, 'search'])->middleware('throttle:30,1')->name('search');
 
 // Giỏ hàng
 Route::prefix('cart')->name('cart.')->group(function () {
@@ -67,7 +67,7 @@ Route::middleware('auth')->prefix('my-orders')->name('orders.')->group(function 
 
 // Đánh giá sản phẩm & Danh sách yêu thích (yêu cầu đăng nhập)
 Route::middleware('auth')->group(function () {
-    Route::post('/product/{product}/review', [ReviewController::class, 'store'])->name('review.store');
+    Route::post('/product/{product}/review', [ReviewController::class, 'store'])->middleware('throttle:10,1')->name('review.store');
     Route::delete('/review/{review}', [ReviewController::class, 'destroy'])->name('review.destroy');
 
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
